@@ -1,9 +1,11 @@
+
 import { UserNav } from '@/components/layout/UserNav';
 import { Logo } from '@/components/common/Logo';
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { Menu } from "lucide-react";
 import AppSidebarContent from './AppSidebarContent'; // Create this to reuse sidebar content
+import { ThemeToggle } from '@/components/common/ThemeToggle'; // Import ThemeToggle
 
 export default function AppHeader() {
   return (
@@ -28,8 +30,8 @@ export default function AppHeader() {
           </div>
           <h1 className="text-xl font-headline ml-2 md:ml-4">Smartfolio Sentinel</h1>
         </div>
-        <div className="flex items-center space-x-4">
-          {/* Add any header actions here if needed */}
+        <div className="flex items-center space-x-2 sm:space-x-4"> {/* Adjusted spacing for new button */}
+          <ThemeToggle /> {/* Add ThemeToggle button */}
           <UserNav />
         </div>
       </div>
