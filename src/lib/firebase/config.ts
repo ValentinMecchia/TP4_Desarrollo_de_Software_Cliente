@@ -15,9 +15,19 @@ const requiredEnvVars: string[] = [
 const missingVars = requiredEnvVars.filter(envVar => !process.env[envVar]);
 
 if (missingVars.length > 0) {
-  console.error("Missing Firebase environment variables:", missingVars);
   throw new Error(
-    `CRITICAL Firebase Configuration Error: The following required environment variable(s) are missing or undefined in your .env.local file: \n\n- ${missingVars.join('\n- ')}\n\nPlease ensure ALL these variables are correctly set in .env.local using the values from your Firebase project's web app configuration (Firebase console -> Project settings -> General tab -> Your apps). \n\nRefer to .env.example for the required variable names and README.md for setup instructions. \n\nIMPORTANT: You MUST RESTART your development server (e.g., 'npm run dev') after creating or modifying the .env.local file for the changes to take effect.`
+`CRITICAL FIREBASE SETUP ISSUE: Your app is missing essential Firebase configuration.
+The following environment variable(s) were NOT found:
+- ${missingVars.join('\n- ')}
+
+TO FIX THIS:
+1. Create a file named '.env.local' in the ROOT DIRECTORY of your project (this is the same folder as your 'package.json' file).
+2. Copy the content from '.env.example' (also in the root directory) into your new '.env.local' file.
+3. In '.env.local', replace ALL placeholder values (e.g., "YOUR_FIREBASE_API_KEY") with your ACTUAL Firebase project credentials. You can find these in: Firebase Console -> Project Settings (gear icon) -> General tab -> Your apps -> Web app config.
+4. Ensure the variable names in '.env.local' (e.g., NEXT_PUBLIC_FIREBASE_API_KEY) exactly match those in '.env.example'. Check for typos.
+5. CRUCIAL: You MUST RESTART your development server (e.g., stop 'npm run dev' and run it again) after creating or changing the '.env.local' file. Next.js only reads this file on startup.
+
+See README.md for more detailed setup instructions.`
   );
 }
 
