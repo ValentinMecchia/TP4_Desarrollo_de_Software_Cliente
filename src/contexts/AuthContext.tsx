@@ -1,3 +1,4 @@
+'use client';
 // This file is intentionally left blank after removing Firebase Authentication.
 // All components relying on useAuth will need to be refactored or will use mock data.
 // You can delete this file if it's no longer referenced.
