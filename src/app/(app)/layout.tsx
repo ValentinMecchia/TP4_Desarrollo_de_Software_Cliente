@@ -1,40 +1,14 @@
-'use client';
+// No longer client component for auth checks
+// 'use client'; removed
 
-import { useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import { useAuth } from '@/contexts/AuthContext';
 import AppSidebar from '@/components/layout/AppSidebar';
 import AppHeader from '@/components/layout/AppHeader';
-import { ROUTES } from '@/constants/routes';
-import { LoadingSpinner } from '@/components/common/LoadingSpinner';
+// import { ROUTES } from '@/constants/routes'; // No longer needed for redirection
+// import { LoadingSpinner } from '@/components/common/LoadingSpinner'; // No longer needed for auth loading
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
-  const { user, loading } = useAuth();
-  const router = useRouter();
-
-  useEffect(() => {
-    if (!loading && !user) {
-      router.replace(ROUTES.LOGIN);
-    }
-  }, [user, loading, router]);
-
-  if (loading) {
-    return (
-      <div className="flex h-screen w-screen items-center justify-center bg-background">
-        <LoadingSpinner size={48} />
-        <p className="ml-4 text-lg">Loading your Smartfolio...</p>
-      </div>
-    );
-  }
-
-  if (!user) {
-     // This case should ideally be handled by the redirect, but as a fallback:
-     return (
-      <div className="flex h-screen w-screen items-center justify-center bg-background">
-        <p>Redirecting to login...</p>
-      </div>
-    );
-  }
+  // All auth checks and loading states are removed.
+  // The layout is always rendered.
 
   return (
     <div className="flex min-h-screen bg-background">

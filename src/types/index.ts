@@ -1,20 +1,18 @@
-import type { User as FirebaseUser } from 'firebase/auth';
 
 export interface UserProfile {
   id: string;
   email: string | null;
   displayName: string | null;
   photoURL?: string | null;
-  // Add any other custom user properties from your backend
+  // Add any other custom user properties if needed for mock display
 }
 
-// Extend FirebaseUser with custom properties if needed, or use a separate UserProfile type
-export interface AppUser extends FirebaseUser, UserProfile {}
+// AppUser type removed as FirebaseUser is no longer used.
 
 export interface Portfolio {
   id: string;
   name: string;
-  userId: string;
+  userId: string; // Could be a mock user ID or removed if not relevant for frontend-only
   // Add other portfolio properties
 }
 
@@ -51,8 +49,8 @@ export interface NewsArticle {
   publishedAt: string;
   summary?: string;
   imageUrl?: string;
-  relevanceToPortfolio?: 'high' | 'medium' | 'low'; // Added by AI
-  potentialTradeSuggestion?: string; // Added by AI
+  relevanceToPortfolio?: 'high' | 'medium' | 'low'; // Kept for mock AI
+  potentialTradeSuggestion?: string; // Kept for mock AI
 }
 
 export interface AIInsight {

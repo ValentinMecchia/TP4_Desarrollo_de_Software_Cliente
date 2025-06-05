@@ -1,29 +1,31 @@
-# Firebase Studio
+# Firebase Studio - Frontend Only Version
 
-This is a NextJS starter in Firebase Studio.
+This is a NextJS starter in Firebase Studio, modified to be a frontend-only application.
+It does not require any backend services like Firebase for its core functionality and uses mock data.
 
 ## Getting Started
 
-1.  **Set up Firebase Configuration:**
-    *   Rename the `.env.example` file in the root directory to `.env.local`.
-    *   Open `.env.local` and replace the placeholder values (like `"YOUR_FIREBASE_API_KEY"`) with your actual Firebase project's web app configuration details. You can find these in your Firebase project settings:
-        *   Go to your Firebase project.
-        *   Click on Project settings (the gear icon).
-        *   Under the "General" tab, scroll down to "Your apps".
-        *   If you haven't added a web app, do so.
-        *   Select your web app, and you'll find the `firebaseConfig` object containing your `apiKey`, `authDomain`, etc.
-
-2.  **Install Dependencies (if not already done automatically):**
-    While Firebase Studio often handles this, if you're running locally:
+1.  **Install Dependencies (if not already done automatically):**
     ```bash
     npm install
     ```
 
-3.  **Run the Development Server:**
+2.  **Run the Development Server:**
     ```bash
     npm run dev
     ```
 
     The app should now be running, typically on `http://localhost:9002`.
 
-To get started with coding, take a look at `src/app/page.tsx`.
+## Overview of Changes for Frontend-Only
+
+*   **Firebase Removed**: All Firebase SDKs, authentication services, and backend configurations have been removed. The app no longer connects to or depends on Firebase.
+*   **Genkit AI Removed**: All Genkit related code and AI flow processing have been removed. Any AI-like features (e.g., insights on the News page) are simulated with mock data.
+*   **Authentication Removed**: User login, registration, and session management have been removed. The application operates as if for a single demo user, or with features that don't require user-specific data.
+*   **Data Source**: The application relies on mock data defined directly within the page components (e.g., for assets, portfolios, news).
+*   **API Client**: The generic API client (`src/services/apiClient.ts`) has been removed as it was primarily for interacting with a backend.
+
+## Hosting
+This frontend-only application can be deployed to any static hosting provider or platforms that support Next.js builds (like Vercel, Netlify, GitHub Pages after export, etc.) for free or at low cost.
+
+To get started with coding, take a look at the page components in `src/app/(app)/`.

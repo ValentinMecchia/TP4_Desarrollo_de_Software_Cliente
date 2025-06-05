@@ -1,82 +1,40 @@
-'use client';
+// This file is intentionally left blank after removing Firebase Authentication.
+// All components relying on useAuth will need to be refactored or will use mock data.
+// You can delete this file if it's no longer referenced.
 
 import type { ReactNode } from 'react';
-import React, { createContext, useState, useEffect, useContext } from 'react';
-import type { User as FirebaseUser } from 'firebase/auth';
-import { onAuthStateChangedWrapper, signOut as firebaseSignOut } from '@/services/authService';
+import React, { createContext, useContext } from 'react';
 import type { UserProfile } from '@/types';
-import { apiClient } from '@/services/apiClient'; // Assuming apiClient can fetch user profile
+
 
 interface AuthContextType {
-  user: FirebaseUser | null;
-  userProfile: UserProfile | null;
-  loading: boolean;
+  user: null; // Always null in frontend-only mode
+  userProfile: UserProfile | null; // Mock profile
+  loading: boolean; // Always false
   error: Error | null;
   signOut: () => Promise<void>;
-  // Add other auth methods if needed, e.g., wrapped login/signup from authService
 }
+
+const mockUserProfile: UserProfile = {
+  id: 'mock-user-id',
+  email: 'user@example.com',
+  displayName: 'Demo User',
+  photoURL: 'https://placehold.co/100x100.png?text=DU',
+};
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const [user, setUser] = useState<FirebaseUser | null>(null);
-  const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<Error | null>(null);
-
-  useEffect(() => {
-    const unsubscribe = onAuthStateChangedWrapper(async (firebaseUser) => {
-      setLoading(true);
-      setError(null);
-      if (firebaseUser) {
-        setUser(firebaseUser);
-        try {
-          // Example: Fetch user profile from your backend
-          // const profile = await apiClient.getUserProfile(firebaseUser.uid);
-          // setUserProfile(profile);
-
-          // For now, use a placeholder profile based on FirebaseUser
-          setUserProfile({
-            id: firebaseUser.uid,
-            email: firebaseUser.email,
-            displayName: firebaseUser.displayName,
-            photoURL: firebaseUser.photoURL,
-          });
-
-        } catch (e) {
-          console.error("Failed to fetch user profile", e);
-          setError(e instanceof Error ? e : new Error('Failed to fetch user profile'));
-          // Optional: sign out user if profile fetch fails critically
-          // await firebaseSignOut();
-          // setUser(null);
-          // setUserProfile(null);
-        }
-      } else {
-        setUser(null);
-        setUserProfile(null);
-      }
-      setLoading(false);
-    });
-
-    return () => unsubscribe();
-  }, []);
-
-  const signOut = async () => {
-    setLoading(true);
-    try {
-      await firebaseSignOut();
-      setUser(null);
-      setUserProfile(null);
-    } catch (e) {
-      console.error("Sign out failed", e);
-      setError(e instanceof Error ? e : new Error('Sign out failed'));
-    } finally {
-      setLoading(false);
-    }
+  const value: AuthContextType = {
+    user: null,
+    userProfile: mockUserProfile, // Provide a mock user profile
+    loading: false,
+    error: null,
+    signOut: async () => { /* Mock sign out */ },
   };
 
   return (
-    <AuthContext.Provider value={{ user, userProfile, loading, error, signOut }}>
+    <AuthContext.Provider value={value}>
       {children}
     </AuthContext.Provider>
   );
@@ -85,7 +43,16 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 export const useAuth = (): AuthContextType => {
   const context = useContext(AuthContext);
   if (context === undefined) {
-    throw new Error('useAuth must be used within an AuthProvider');
+    // This basic provider can be used if some components still call useAuth
+    // but it won't provide real auth functionality.
+    // Consider removing useAuth calls from components for a true frontend-only app.
+    return {
+      user: null,
+      userProfile: mockUserProfile,
+      loading: false,
+      error: null,
+      signOut: async () => {},
+    };
   }
   return context;
 };

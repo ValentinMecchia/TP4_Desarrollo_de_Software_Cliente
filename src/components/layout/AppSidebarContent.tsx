@@ -6,10 +6,10 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { ROUTES } from '@/constants/routes';
-import { LayoutDashboard, Briefcase, BarChart2, Newspaper, Settings, LogOut } from 'lucide-react';
+import { LayoutDashboard, Briefcase, BarChart2, Newspaper, Settings } from 'lucide-react'; // LogOut removed
 import { Logo } from '@/components/common/Logo';
-import { useAuth } from '@/contexts/AuthContext';
-import { useRouter } from 'next/navigation';
+// import { useAuth } from '@/contexts/AuthContext'; // Auth removed
+// import { useRouter } from 'next/navigation'; // Router for signout removed
 
 interface NavItem {
   href: string;
@@ -22,7 +22,7 @@ const navItems: NavItem[] = [
   { href: ROUTES.PORTFOLIOS, label: 'Portfolios', icon: Briefcase },
   { href: ROUTES.ASSETS, label: 'Assets', icon: BarChart2 },
   { href: ROUTES.NEWS, label: 'News & Insights', icon: Newspaper },
-  { href: ROUTES.SETTINGS, label: 'Settings', icon: Settings }, // Example
+  { href: ROUTES.SETTINGS, label: 'Settings', icon: Settings },
 ];
 
 interface AppSidebarContentProps {
@@ -32,14 +32,14 @@ interface AppSidebarContentProps {
 
 export default function AppSidebarContent({ isMobile = false, onLinkClick }: AppSidebarContentProps) {
   const pathname = usePathname();
-  const { signOut } = useAuth();
-  const router = useRouter();
+  // const { signOut } = useAuth(); // Auth removed
+  // const router = useRouter(); // Router for signout removed
 
-  const handleSignOut = async () => {
-    await signOut();
-    router.push(ROUTES.LOGIN);
-    if (onLinkClick) onLinkClick();
-  };
+  // const handleSignOut = async () => { // Sign out removed
+  //   await signOut();
+  //   router.push(ROUTES.LOGIN);
+  //   if (onLinkClick) onLinkClick();
+  // };
 
   return (
     <div className="flex h-full flex-col">
@@ -66,16 +66,7 @@ export default function AppSidebarContent({ isMobile = false, onLinkClick }: App
           ))}
         </nav>
       </ScrollArea>
-      <div className="mt-auto p-4 border-t border-sidebar-border">
-        <Button
-          variant="ghost"
-          className="w-full justify-start text-base text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
-          onClick={handleSignOut}
-        >
-          <LogOut className="mr-3 h-5 w-5" />
-          Logout
-        </Button>
-      </div>
+      {/* Logout button section removed */}
     </div>
   );
 }

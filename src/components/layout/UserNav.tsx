@@ -11,31 +11,24 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { useAuth } from '@/contexts/AuthContext';
-import { LogOut, User as UserIcon, Settings } from 'lucide-react';
-import { useRouter } from 'next/navigation';
+// import { useAuth } from '@/contexts/AuthContext'; // Using mock data directly
+import { Settings } from 'lucide-react';
+// import { useRouter } from 'next/navigation'; // No more sign out
 import { ROUTES } from '@/constants/routes';
 import Link from 'next/link';
 
+// Mock user profile for display
+const mockUserProfile = {
+  displayName: "Demo User",
+  email: "demo@example.com",
+  photoURL: "https://placehold.co/40x40.png?text=DU",
+};
+
 export function UserNav() {
-  const { userProfile, signOut, loading } = useAuth();
-  const router = useRouter();
-
-  const handleSignOut = async () => {
-    await signOut();
-    router.push(ROUTES.LOGIN);
-  };
-
-  if (loading) {
-    return <div className="h-8 w-8 rounded-full bg-muted animate-pulse" />;
-  }
-
-  if (!userProfile) {
-    return null;
-  }
+  // const router = useRouter(); // No longer needed for sign out
 
   const getInitials = (name: string | null | undefined) => {
-    if (!name) return 'S'; // Sentinel initial
+    if (!name) return 'U'; // User initial
     const names = name.split(' ');
     if (names.length > 1) {
       return `${names[0][0]}${names[names.length - 1][0]}`.toUpperCase();
@@ -48,35 +41,30 @@ export function UserNav() {
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" className="relative h-9 w-9 rounded-full">
           <Avatar className="h-9 w-9">
-            <AvatarImage src={userProfile.photoURL || undefined} alt={userProfile.displayName || 'User avatar'} />
-            <AvatarFallback>{getInitials(userProfile.displayName)}</AvatarFallback>
+            <AvatarImage src={mockUserProfile.photoURL || undefined} alt={mockUserProfile.displayName || 'User avatar'} />
+            <AvatarFallback>{getInitials(mockUserProfile.displayName)}</AvatarFallback>
           </Avatar>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-56" align="end" forceMount>
         <DropdownMenuLabel className="font-normal">
           <div className="flex flex-col space-y-1">
-            <p className="text-sm font-medium leading-none">{userProfile.displayName || 'User'}</p>
+            <p className="text-sm font-medium leading-none">{mockUserProfile.displayName || 'User'}</p>
             <p className="text-xs leading-none text-muted-foreground">
-              {userProfile.email}
+              {mockUserProfile.email}
             </p>
           </div>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
           <DropdownMenuItem asChild>
-            <Link href={ROUTES.SETTINGS} className="cursor-pointer"> {/* Assuming settings route exists */}
+            <Link href={ROUTES.SETTINGS} className="cursor-pointer">
               <Settings className="mr-2 h-4 w-4" />
               <span>Settings</span>
             </Link>
           </DropdownMenuItem>
-          {/* Add more items here like 'Profile' if needed */}
         </DropdownMenuGroup>
-        <DropdownMenuSeparator />
-        <DropdownMenuItem onClick={handleSignOut} className="cursor-pointer text-destructive focus:text-destructive focus:bg-destructive/10">
-          <LogOut className="mr-2 h-4 w-4" />
-          <span>Log out</span>
-        </DropdownMenuItem>
+        {/* Sign out item removed */}
       </DropdownMenuContent>
     </DropdownMenu>
   );
