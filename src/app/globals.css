@@ -1,3 +1,4 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -50,6 +51,12 @@
     --chart-3: 300 50% 60%;
     --chart-4: 270 40% 70%;
     --chart-5: 240 60% 65%;
+
+    /* Semantic financial colors */
+    --positive: 150 50% 45%; /* A balanced green */
+    --positive-foreground: 150 50% 95%;
+    --negative: 0 65% 55%;   /* A clear red */
+    --negative-foreground: 0 65% 95%;
   }
 
   .dark {
@@ -91,6 +98,12 @@
     --sidebar-accent-foreground: 270 27% 95%;
     --sidebar-border: 255 10% 25%;
     --sidebar-ring: 212 72% 60%;
+
+    /* Semantic financial colors - Dark Theme */
+    --positive: 150 55% 60%;
+    --positive-foreground: 150 55% 10%;
+    --negative: 0 70% 65%;
+    --negative-foreground: 0 70% 15%;
   }
 }
 

@@ -1,11 +1,11 @@
+
 'use client';
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { ArrowUpRight, ArrowDownRight, LineChart } from "lucide-react";
+import { ArrowUpRight, ArrowDownRight, LineChart, WalletCards, AreaChart, Sparkles } from "lucide-react";
 import { ChartContainer, ChartTooltip, ChartTooltipContent, ChartLegend, ChartLegendContent } from "@/components/ui/chart";
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis, ResponsiveContainer } from "recharts";
-import Image from "next/image";
 
 // Mock data - replace with API calls
 const assets = [
@@ -13,6 +13,8 @@ const assets = [
   { id: "2", name: "EcoEnergy Solutions", symbol: "EES", price: 75.20, change: -0.80, changePercent: -1.05, marketCap: "500B" },
   { id: "3", name: "Global Health Corp", symbol: "GHC", price: 210.40, change: 1.15, changePercent: 0.55, marketCap: "800B" },
   { id: "4", name: "CryptoCoin Alpha", symbol: "CCA", price: 4500.00, change: 150.00, changePercent: 3.45, marketCap: "90B" },
+  { id: "5", name: "Future Retail Group", symbol: "FRG", price: 32.50, change: -0.10, changePercent: -0.31, marketCap: "60B" },
+  { id: "6", name: "BioSynth Pharma", symbol: "BSP", price: 180.90, change: 3.45, changePercent: 1.94, marketCap: "250B" },
 ];
 
 const chartData = [
@@ -33,38 +35,49 @@ const chartConfig = {
 
 export default function AssetsPage() {
   return (
-    <div className="container mx-auto py-8">
-      <h1 className="text-3xl font-headline font-bold mb-8 text-primary">Asset Performance</h1>
+    <div className="container mx-auto py-8 px-4 sm:px-6 lg:px-8">
+      <div className="flex items-center gap-3 mb-10">
+        <Sparkles className="h-10 w-10 text-primary" />
+        <h1 className="text-4xl font-headline font-bold text-transparent bg-clip-text bg-gradient-to-r from-primary via-accent to-secondary">
+          Asset Performance Matrix
+        </h1>
+      </div>
+      
 
-      <Card className="mb-8">
-        <CardHeader>
-          <CardTitle className="font-headline">Asset Overview</CardTitle>
-          <CardDescription>Track the performance of your individual assets.</CardDescription>
+      <Card className="mb-8 transition-all duration-300 ease-in-out hover:shadow-2xl hover:-translate-y-1.5 hover:shadow-primary/20 border border-border hover:border-primary/30">
+        <CardHeader className="flex flex-row items-center justify-between space-x-4">
+          <div>
+            <CardTitle className="font-headline text-2xl flex items-center gap-2">
+              <WalletCards className="h-6 w-6 text-primary/80" />
+              Asset Overview
+            </CardTitle>
+            <CardDescription>Track the real-time performance of your individual assets.</CardDescription>
+          </div>
         </CardHeader>
         <CardContent>
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Asset Name</TableHead>
-                <TableHead>Symbol</TableHead>
-                <TableHead className="text-right">Price</TableHead>
-                <TableHead className="text-right">Change (24h)</TableHead>
-                <TableHead className="text-right">Market Cap</TableHead>
+                <TableHead className="font-semibold text-muted-foreground/90">Asset Name</TableHead>
+                <TableHead className="font-semibold text-muted-foreground/90">Symbol</TableHead>
+                <TableHead className="text-right font-semibold text-muted-foreground/90">Price</TableHead>
+                <TableHead className="text-right font-semibold text-muted-foreground/90">Change (24h)</TableHead>
+                <TableHead className="text-right font-semibold text-muted-foreground/90">Market Cap</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {assets.map((asset) => (
-                <TableRow key={asset.id}>
-                  <TableCell className="font-medium">{asset.name}</TableCell>
-                  <TableCell>{asset.symbol}</TableCell>
-                  <TableCell className="text-right">${asset.price.toLocaleString()}</TableCell>
-                  <TableCell className={`text-right font-medium ${asset.change >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                <TableRow key={asset.id} className="transition-colors duration-150 hover:bg-muted/50">
+                  <TableCell className="font-medium py-3.5">{asset.name}</TableCell>
+                  <TableCell className="py-3.5">{asset.symbol}</TableCell>
+                  <TableCell className="text-right py-3.5">${asset.price.toLocaleString()}</TableCell>
+                  <TableCell className={`text-right font-medium py-3.5 ${asset.change >= 0 ? 'text-positive' : 'text-negative'}`}>
                     <span className="inline-flex items-center">
                       {asset.change >= 0 ? <ArrowUpRight className="h-4 w-4 mr-1" /> : <ArrowDownRight className="h-4 w-4 mr-1" />}
                       {asset.changePercent.toFixed(2)}%
                     </span>
                   </TableCell>
-                  <TableCell className="text-right">{asset.marketCap}</TableCell>
+                  <TableCell className="text-right py-3.5">{asset.marketCap}</TableCell>
                 </TableRow>
               ))}
             </TableBody>
@@ -72,30 +85,40 @@ export default function AssetsPage() {
         </CardContent>
       </Card>
       
-      <Card>
-        <CardHeader>
-          <CardTitle className="font-headline">Historical Performance</CardTitle>
-          <CardDescription>Monthly performance of selected assets.</CardDescription>
+      <Card className="transition-all duration-300 ease-in-out hover:shadow-2xl hover:-translate-y-1.5 hover:shadow-primary/20 border border-border hover:border-primary/30">
+        <CardHeader className="flex flex-row items-center justify-between space-x-4">
+           <div>
+            <CardTitle className="font-headline text-2xl flex items-center gap-2">
+              <AreaChart className="h-6 w-6 text-primary/80" />
+              Historical Performance
+            </CardTitle>
+            <CardDescription>Monthly performance visualization of selected assets.</CardDescription>
+          </div>
         </CardHeader>
         <CardContent>
           <ChartContainer config={chartConfig} className="h-[400px] w-full">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={chartData} margin={{ top: 20, right: 20, bottom: 5, left: 0 }}>
-                <CartesianGrid strokeDasharray="3 3" vertical={false}/>
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--border)/0.5)"/>
                 <XAxis dataKey="date" tickLine={false} axisLine={false} tickMargin={8} />
                 <YAxis tickLine={false} axisLine={false} tickMargin={8} />
-                <ChartTooltip content={<ChartTooltipContent />} />
+                <ChartTooltip 
+                  content={<ChartTooltipContent />} 
+                  cursor={{fill: "hsl(var(--accent)/0.2)"}}
+                />
                 <ChartLegend content={<ChartLegendContent />} />
-                <Bar dataKey="TII" fill="var(--color-TII)" radius={4} />
-                <Bar dataKey="EES" fill="var(--color-EES)" radius={4} />
-                <Bar dataKey="GHC" fill="var(--color-GHC)" radius={4} />
+                <Bar dataKey="TII" fill="var(--color-TII)" radius={[4, 4, 0, 0]} isAnimationActive={true} />
+                <Bar dataKey="EES" fill="var(--color-EES)" radius={[4, 4, 0, 0]} isAnimationActive={true} />
+                <Bar dataKey="GHC" fill="var(--color-GHC)" radius={[4, 4, 0, 0]} isAnimationActive={true} />
               </BarChart>
             </ResponsiveContainer>
           </ChartContainer>
-          <div className="mt-4 flex items-center justify-center bg-muted rounded-md p-4">
-            <LineChart className="h-8 w-8 text-muted-foreground" />
-            <p className="ml-2 text-muted-foreground">Detailed historical chart coming soon.</p>
-            <Image src="https://placehold.co/700x350.png" alt="Historical Performance Chart" width={700} height={350} className="w-full h-auto rounded-md mt-2" data-ai-hint="stock chart graph"/>
+          <div className="mt-8 flex flex-col items-center justify-center bg-muted/30 dark:bg-muted/10 rounded-lg p-8 min-h-[150px] border border-dashed border-border/70 text-center">
+            <LineChart className="h-12 w-12 text-primary/60 mb-4" />
+            <p className="text-xl font-semibold text-foreground/80">Advanced Analytics Interface</p>
+            <p className="text-sm text-muted-foreground mt-1">
+              Detailed historical data streams and predictive modeling coming soon.
+            </p>
           </div>
         </CardContent>
       </Card>
