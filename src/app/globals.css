@@ -5,105 +5,105 @@
 
 @layer base {
   :root {
-    --background: 270 27% 95%; /* Light Lavender #F3EFF7 */
-    --foreground: 255 10% 20%; /* Dark Purple-Gray */
+    /* Updated Light Theme for "Futuristic Cute" */
+    --background: 220 30% 97%; /* Very Light Cool Off-White */
+    --foreground: 220 15% 30%; /* Dark Slate Blue */
 
-    --muted: 270 20% 90%; /* Very light lavender/gray */
-    --muted-foreground: 255 10% 45%; /* Medium purple-gray */
+    --muted: 220 25% 90%; 
+    --muted-foreground: 220 15% 50%;
 
-    --popover: 0 0% 100%; /* White */
-    --popover-foreground: 255 10% 20%;
+    --popover: 0 0% 100%; 
+    --popover-foreground: 220 15% 30%;
 
-    --card: 0 0% 100%; /* White */
-    --card-foreground: 255 10% 20%;
+    --card: 0 0% 100%; 
+    --card-foreground: 220 15% 30%;
 
-    --border: 255 20% 80%; /* Light purple border */
-    --input: 255 20% 88%; /* Slightly darker input background */
+    --border: 220 20% 85%; 
+    --input: 220 20% 92%; 
 
-    --primary: 255 37% 48%; /* Deep Purple #6750A4 */
-    --primary-foreground: 270 27% 98%; /* Very Light Lavender/White */
+    --primary: 210 85% 58%; /* Vibrant Electric Blue */
+    --primary-foreground: 0 0% 100%; /* White */
 
-    --secondary: 255 30% 85%; /* Lighter purple */
-    --secondary-foreground: 255 37% 48%; /* Deep purple */
+    --secondary: 220 60% 75%; /* Lighter, softer blue */
+    --secondary-foreground: 220 15% 20%; 
 
-    --accent: 212 72% 80%; /* Soft Blue #A0CAF2 */
-    --accent-foreground: 212 30% 25%; /* Dark Blue */
+    --accent: 330 90% 68%; /* Bright Pink/Magenta */
+    --accent-foreground: 0 0% 100%; /* White */
     
-    --destructive: 0 84.2% 60.2%;
+    --destructive: 0 75% 60%;
     --destructive-foreground: 0 0% 98%;
 
-    --ring: 212 72% 80%; /* Soft Blue for focus rings */
+    --ring: 210 85% 65%; /* Slightly lighter electric blue for focus rings */
 
-    --radius: 0.5rem;
+    --radius: 0.75rem; /* Increased for a softer, "cuter" feel */
 
-    /* Sidebar specific theme variables, can be adjusted if needed */
-    --sidebar-background: 255 37% 40%; /* Darker Deep Purple */
-    --sidebar-foreground: 270 27% 95%; /* Light Lavender for text */
-    --sidebar-primary: 212 72% 80%; /* Soft Blue for active/hover */
-    --sidebar-primary-foreground: 255 10% 20%; /* Dark Purple-Gray for text on soft blue */
-    --sidebar-accent: 255 37% 55%; /* Slightly lighter Deep Purple for hover */
-    --sidebar-accent-foreground: 270 27% 98%; /* Light Lavender for text on accent */
-    --sidebar-border: 255 37% 35%; /* Darker purple border */
-    --sidebar-ring: 212 72% 70%; /* Lighter Soft Blue */
+    /* Sidebar specific theme variables - can be adjusted if new theme clashes */
+    /* Keeping sidebar relatively dark for contrast and 'futuristic' feel */
+    --sidebar-background: 220 15% 20%; /* Dark Slate Blue - matching foreground elements */
+    --sidebar-foreground: 220 20% 90%; 
+    --sidebar-primary: 210 85% 58%; /* Vibrant Electric Blue */
+    --sidebar-primary-foreground: 0 0% 100%; 
+    --sidebar-accent: 220 15% 30%; 
+    --sidebar-accent-foreground: 220 20% 95%; 
+    --sidebar-border: 220 15% 25%; 
+    --sidebar-ring: 210 85% 65%;
 
-    --chart-1: 255 37% 48%;
-    --chart-2: 212 72% 80%;
-    --chart-3: 300 50% 60%;
-    --chart-4: 270 40% 70%;
-    --chart-5: 240 60% 65%;
+    --chart-1: 210 85% 58%; /* Primary Blue */
+    --chart-2: 330 90% 68%; /* Accent Pink */
+    --chart-3: 150 70% 50%; /* A Teal/Green for variety */
+    --chart-4: 270 70% 65%; /* A Purple */
+    --chart-5: 30 80% 60%;  /* An Orange */
 
-    /* Semantic financial colors */
-    --positive: 150 50% 45%; /* A balanced green */
-    --positive-foreground: 150 50% 95%;
-    --negative: 0 65% 55%;   /* A clear red */
-    --negative-foreground: 0 65% 95%;
+    /* Semantic financial colors - more vibrant/techy */
+    --positive: 140 65% 55%; /* Vibrant Green */
+    --positive-foreground: 140 65% 98%;
+    --negative: 0 80% 65%;   /* Vibrant Red */
+    --negative-foreground: 0 80% 98%;
   }
 
   .dark {
-    /* Define dark theme if needed, for now keep it consistent or adjust based on preference */
-    --background: 255 10% 15%; /* Dark Purple-Gray */
-    --foreground: 270 27% 95%; /* Light Lavender */
+    --background: 220 15% 10%; /* Very Dark Blue/Gray */
+    --foreground: 220 20% 90%; /* Light Gray/Blue */
 
-    --muted: 255 10% 25%;
-    --muted-foreground: 270 20% 70%;
+    --muted: 220 15% 20%;
+    --muted-foreground: 220 20% 70%;
 
-    --popover: 255 10% 10%;
-    --popover-foreground: 270 27% 95%;
+    --popover: 220 15% 8%;
+    --popover-foreground: 220 20% 90%;
 
-    --card: 255 10% 12%;
-    --card-foreground: 270 27% 95%;
+    --card: 220 15% 12%;
+    --card-foreground: 220 20% 90%;
 
-    --border: 255 15% 30%;
-    --input: 255 15% 35%;
+    --border: 220 15% 25%;
+    --input: 220 15% 22%;
 
-    --primary: 255 37% 55%; /* Lighter Deep Purple */
-    --primary-foreground: 270 27% 98%;
+    --primary: 210 85% 60%; 
+    --primary-foreground: 0 0% 100%;
 
-    --secondary: 255 30% 30%;
-    --secondary-foreground: 270 27% 95%;
+    --secondary: 220 20% 30%;
+    --secondary-foreground: 220 20% 90%;
 
-    --accent: 212 72% 70%; /* Slightly darker Soft Blue */
-    --accent-foreground: 255 10% 15%;
+    --accent: 330 90% 70%; 
+    --accent-foreground: 0 0% 100%;
     
-    --destructive: 0 70% 50%;
+    --destructive: 0 70% 55%;
     --destructive-foreground: 0 0% 98%;
 
-    --ring: 212 72% 70%;
+    --ring: 210 85% 65%;
 
-    --sidebar-background: 255 10% 10%;
-    --sidebar-foreground: 270 27% 90%;
-    --sidebar-primary: 212 72% 70%;
-    --sidebar-primary-foreground: 255 10% 15%;
-    --sidebar-accent: 255 10% 20%;
-    --sidebar-accent-foreground: 270 27% 95%;
-    --sidebar-border: 255 10% 25%;
-    --sidebar-ring: 212 72% 60%;
+    --sidebar-background: 220 15% 8%;
+    --sidebar-foreground: 220 20% 85%;
+    --sidebar-primary: 210 85% 60%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 220 15% 18%;
+    --sidebar-accent-foreground: 220 20% 90%;
+    --sidebar-border: 220 15% 15%;
+    --sidebar-ring: 210 85% 60%;
 
-    /* Semantic financial colors - Dark Theme */
-    --positive: 150 55% 60%;
-    --positive-foreground: 150 55% 10%;
-    --negative: 0 70% 65%;
-    --negative-foreground: 0 70% 15%;
+    --positive: 140 60% 60%;
+    --positive-foreground: 140 60% 10%;
+    --negative: 0 75% 65%;
+    --negative-foreground: 0 75% 15%;
   }
 }
 
