@@ -9,7 +9,6 @@ export default function HomePage() {
   const router = useRouter();
 
   useEffect(() => {
-    // Always redirect to dashboard in a frontend-only app
     router.replace(ROUTES.DASHBOARD);
   }, [router]);
 

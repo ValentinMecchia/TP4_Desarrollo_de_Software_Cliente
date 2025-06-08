@@ -6,18 +6,10 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { ROUTES } from '@/constants/routes';
-import { LayoutDashboard, Briefcase, BarChart2, Newspaper, Settings } from 'lucide-react'; // LogOut removed
+import { LayoutDashboard, Briefcase, BarChart2, Newspaper, Settings } from 'lucide-react';
 import { Logo } from '@/components/common/Logo';
-// import { useAuth } from '@/contexts/AuthContext'; // Auth removed
-// import { useRouter } from 'next/navigation'; // Router for signout removed
 
-interface NavItem {
-  href: string;
-  label: string;
-  icon: React.ElementType;
-}
-
-const navItems: NavItem[] = [
+const navItems = [
   { href: ROUTES.DASHBOARD, label: 'Dashboard', icon: LayoutDashboard },
   { href: ROUTES.PORTFOLIOS, label: 'Portfolios', icon: Briefcase },
   { href: ROUTES.ASSETS, label: 'Assets', icon: BarChart2 },
@@ -25,21 +17,8 @@ const navItems: NavItem[] = [
   { href: ROUTES.SETTINGS, label: 'Settings', icon: Settings },
 ];
 
-interface AppSidebarContentProps {
-  isMobile?: boolean;
-  onLinkClick?: () => void; // For mobile to close sheet
-}
-
-export default function AppSidebarContent({ isMobile = false, onLinkClick }: AppSidebarContentProps) {
+export default function AppSidebarContent({ isMobile = false, onLinkClick }) {
   const pathname = usePathname();
-  // const { signOut } = useAuth(); // Auth removed
-  // const router = useRouter(); // Router for signout removed
-
-  // const handleSignOut = async () => { // Sign out removed
-  //   await signOut();
-  //   router.push(ROUTES.LOGIN);
-  //   if (onLinkClick) onLinkClick();
-  // };
 
   return (
     <div className="flex h-full flex-col">
@@ -66,7 +45,6 @@ export default function AppSidebarContent({ isMobile = false, onLinkClick }: App
           ))}
         </nav>
       </ScrollArea>
-      {/* Logout button section removed */}
     </div>
   );
 }

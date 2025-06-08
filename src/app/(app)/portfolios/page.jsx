@@ -1,4 +1,3 @@
-
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { PlusCircle, Edit3, Trash2, ChevronRight, FolderArchive } from "lucide-react";
@@ -34,7 +33,14 @@ export default function PortfoliosPage() {
             <CardDescription>Start by creating your first investment portfolio.</CardDescription>
           </CardHeader>
           <CardContent>
-            <Image src="https://placehold.co/300x200.png" alt="Empty state illustration" width={300} height={200} className="mx-auto mb-6 rounded-lg shadow-md" data-ai-hint="empty document"/>
+            <Image
+              src="https://placehold.co/300x200.png"
+              alt="Empty state illustration"
+              width={300}
+              height={200}
+              className="mx-auto mb-6 rounded-lg shadow-md"
+              data-ai-hint="empty document"
+            />
             <Button size="lg" className="shadow-lg hover:shadow-primary/40">
               <PlusCircle className="mr-2 h-5 w-5" /> Create Portfolio
             </Button>
@@ -50,8 +56,17 @@ export default function PortfoliosPage() {
               </CardHeader>
               <CardContent className="flex-grow">
                 <p className="text-sm text-muted-foreground">Assets: {portfolio.assetCount}</p>
-                <p className="text-sm text-muted-foreground mb-3">Last Updated: {new Date(portfolio.lastUpdated).toLocaleDateString()}</p>
-                <Image src={`https://placehold.co/400x200.png?text=${portfolio.name.replace(/\s/g, '+')}&id=${portfolio.id}`} alt={portfolio.name} width={400} height={200} className="w-full h-auto rounded-md shadow-sm opacity-80" data-ai-hint="financial graph"/>
+                <p className="text-sm text-muted-foreground mb-3">
+                  Last Updated: {new Date(portfolio.lastUpdated).toLocaleDateString()}
+                </p>
+                <Image
+                  src={`https://placehold.co/400x200.png?text=${portfolio.name.replace(/\s/g, "+")}&id=${portfolio.id}`}
+                  alt={portfolio.name}
+                  width={400}
+                  height={200}
+                  className="w-full h-auto rounded-md shadow-sm opacity-80"
+                  data-ai-hint="financial graph"
+                />
               </CardContent>
               <CardFooter className="flex justify-between items-center border-t pt-4">
                 <div className="space-x-2">
