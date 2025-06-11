@@ -1,23 +1,13 @@
-
 'use client';
 
-import type { ReactNode} from 'react';
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 
-type Theme = 'light' | 'dark';
+const ThemeContext = createContext(undefined);
 
-interface ThemeContextType {
-  theme: Theme;
-  toggleTheme: () => void;
-  setTheme: (theme: Theme) => void;
-}
+export const ThemeProvider = ({ children }) => {
+  const [theme, setThemeState] = useState('light'); // Default to light
 
-const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
-
-export const ThemeProvider = ({ children }: { children: ReactNode }) => {
-  const [theme, setThemeState] = useState<Theme>('light'); // Default to light
-
-  const applyTheme = useCallback((selectedTheme: Theme) => {
+  const applyTheme = useCallback((selectedTheme) => {
     localStorage.setItem('theme', selectedTheme);
     if (selectedTheme === 'dark') {
       document.documentElement.classList.add('dark');
@@ -28,15 +18,15 @@ export const ThemeProvider = ({ children }: { children: ReactNode }) => {
   }, []);
 
   useEffect(() => {
-    const storedTheme = localStorage.getItem('theme') as Theme | null;
+    const storedTheme = localStorage.getItem('theme');
     const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-    
+
     if (storedTheme) {
       applyTheme(storedTheme);
     } else if (systemPrefersDark) {
       applyTheme('dark');
     } else {
-      applyTheme('light'); // Fallback to light if no stored theme and no system preference for dark
+      applyTheme('light');
     }
   }, [applyTheme]);
 
@@ -44,7 +34,7 @@ export const ThemeProvider = ({ children }: { children: ReactNode }) => {
     applyTheme(theme === 'light' ? 'dark' : 'light');
   };
 
-  const setTheme = (newTheme: Theme) => {
+  const setTheme = (newTheme) => {
     applyTheme(newTheme);
   };
 
@@ -55,7 +45,7 @@ export const ThemeProvider = ({ children }: { children: ReactNode }) => {
   );
 };
 
-export const useTheme = (): ThemeContextType => {
+export const useTheme = () => {
   const context = useContext(ThemeContext);
   if (context === undefined) {
     throw new Error('useTheme must be used within a ThemeProvider');
