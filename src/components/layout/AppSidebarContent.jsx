@@ -13,7 +13,7 @@ const navItems = [
   { href: ROUTES.PORTFOLIOS, label: 'Portfolios', icon: Briefcase },
   { href: ROUTES.ASSETS, label: 'Assets', icon: BarChart2 },
   { href: ROUTES.NEWS, label: 'News & Insights', icon: Newspaper },
-  { href: ROUTES.SETTINGS, label: 'Settings', icon: Settings },
+  
 ];
 
 export default function AppSidebarContent({ isMobile = false, onLinkClick }) {

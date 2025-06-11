@@ -110,13 +110,7 @@ export default function AssetsPage() {
                             </BarChart>
                         </ResponsiveContainer>
                     </ChartContainer>
-                    <div className="mt-8 flex flex-col items-center justify-center bg-muted/30 dark:bg-muted/20 rounded-lg p-8 min-h-[150px] border border-dashed border-border/70 text-center shadow-inner">
-                        <LineChart className="h-12 w-12 text-primary/70 mb-4 opacity-80" />
-                        <p className="text-xl font-semibold text-foreground/80">Advanced Analytics Interface</p>
-                        <p className="text-sm text-muted-foreground mt-1">
-                            Detailed historical data streams and predictive modeling are under development.
-                        </p>
-                    </div>
+                   
                 </CardContent>
             </Card>
 
