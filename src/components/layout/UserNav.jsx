@@ -13,7 +13,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Settings } from 'lucide-react';
 import { ROUTES } from '@/constants/routes';
-import Link from 'next/link';
+import { Link } from 'react-router-dom';
 
 // Mock user profile for display
 const mockUserProfile = {
@@ -55,7 +55,7 @@ export function UserNav() {
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
           <DropdownMenuItem asChild>
-            <Link href={ROUTES.SETTINGS} className="cursor-pointer">
+            <Link to={ROUTES.SETTINGS} className="cursor-pointer">
               <Settings className="mr-2 h-4 w-4" />
               <span>Settings</span>
             </Link>

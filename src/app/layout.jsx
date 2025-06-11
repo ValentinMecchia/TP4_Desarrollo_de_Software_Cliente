@@ -1,5 +1,4 @@
 import './globals.css';
-// Suponiendo que AuthProvider y ThemeProvider siguen existiendo como componentes React normales
 import { AuthProvider } from '@/contexts/AuthContext';
 import { ThemeProvider } from '@/contexts/ThemeContext';
 import { Toaster } from '@/components/ui/toaster';

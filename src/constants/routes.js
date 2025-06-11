@@ -1,9 +1,8 @@
 export const ROUTES = {
-  HOME: '/', // This will redirect to DASHBOARD
+  HOME: '/',
   DASHBOARD: '/dashboard',
   PORTFOLIOS: '/portfolios',
   ASSETS: '/assets',
   NEWS: '/news',
   SETTINGS: '/settings',
-  // LOGIN and REGISTER removed
 };

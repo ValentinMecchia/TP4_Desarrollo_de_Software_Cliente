@@ -1,7 +1,6 @@
 'use client';
 
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { Link, useLocation } from 'react-router-dom';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
@@ -18,7 +17,8 @@ const navItems = [
 ];
 
 export default function AppSidebarContent({ isMobile = false, onLinkClick }) {
-  const pathname = usePathname();
+  const location = useLocation();
+  const pathname = location.pathname;
 
   return (
     <div className="flex h-full flex-col">
@@ -28,7 +28,7 @@ export default function AppSidebarContent({ isMobile = false, onLinkClick }) {
       <ScrollArea className="flex-1">
         <nav className="grid items-start gap-1 p-4">
           {navItems.map((item) => (
-            <Link key={item.label} href={item.href} onClick={onLinkClick}>
+            <Link key={item.label} to={item.href} onClick={onLinkClick}>
               <Button
                 variant={pathname === item.href ? 'default' : 'ghost'}
                 className={cn(
