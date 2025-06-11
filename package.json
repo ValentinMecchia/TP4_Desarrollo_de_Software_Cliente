@@ -34,6 +34,7 @@
     "@vitejs/plugin-react": "^4.2.1",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
+    "cors": "^2.8.5",
     "date-fns": "^3.6.0",
     "lucide-react": "^0.475.0",
     "patch-package": "^8.0.0",

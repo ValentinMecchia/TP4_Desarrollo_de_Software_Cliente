@@ -7,6 +7,7 @@ import AppSidebarContent from './AppSidebarContent';
 import { ThemeToggle } from '@/components/common/ThemeToggle';
 
 export default function AppHeader() {
+
   return (
     <header className="sticky top-0 z-40 w-full border-b bg-card shadow-sm">
       <div className="container flex h-16 items-center justify-between px-4 sm:px-6 lg:px-8">
@@ -27,7 +28,7 @@ export default function AppHeader() {
           <div className="hidden md:block">
             <Logo size="md" showText={false} />
           </div>
-          <h1 className="text-xl font-headline ml-2 md:ml-4">Smartfolio Sentinel</h1>
+          <h1 className="text-xl font-headline ml-2 md:ml-4">SmartVest</h1>
         </div>
         <div className="flex items-center space-x-2 sm:space-x-4">
           <ThemeToggle />
