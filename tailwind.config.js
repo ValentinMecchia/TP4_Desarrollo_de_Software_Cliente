@@ -1,12 +1,8 @@
-const { Config } = require('tailwindcss');
-
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   darkMode: ['class'],
   content: [
-    './src/pages/**/*.{js,jsx,ts,tsx,mdx}',
-    './src/components/**/*.{js,jsx,ts,tsx,mdx}',
-    './src/app/**/*.{js,jsx,ts,tsx,mdx}',
+    './src/**/*.{js,jsx,ts,tsx,mdx}',
   ],
   theme: {
     extend: {
@@ -77,8 +73,8 @@ module.exports = {
       },
       borderRadius: {
         lg: 'var(--radius)',
-        md: 'calc(var(--radius) - 0.15rem)', // Adjusted for new base radius
-        sm: 'calc(var(--radius) - 0.3rem)',  // Adjusted for new base radius
+        md: 'calc(var(--radius) - 0.15rem)',
+        sm: 'calc(var(--radius) - 0.3rem)',
       },
       keyframes: {
         'accordion-down': {
