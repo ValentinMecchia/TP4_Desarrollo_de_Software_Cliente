@@ -49,62 +49,9 @@ export default function SettingsPage() {
         </CardContent>
       </Card>
 
-      <Card className={`mb-8 ${cardHoverEffect}`}>
-        <CardHeader>
-          <CardTitle className="font-headline text-xl flex items-center gap-2">
-            <Bell className="h-6 w-6 text-primary/80" />
-            Notification Preferences
-          </CardTitle>
-          <CardDescription>Choose how you want to be notified.</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-6">
-          <div className="flex items-center justify-between p-3 bg-muted/30 rounded-lg hover:bg-muted/50 transition-colors">
-            <Label htmlFor="email-notifications" className="flex flex-col space-y-1 cursor-pointer">
-              <span>Email Notifications</span>
-              <span className="font-normal leading-snug text-muted-foreground text-sm">
-                Receive important updates and alerts via email.
-              </span>
-            </Label>
-            <Switch
-              id="email-notifications"
-              defaultChecked={userSettings.notifications.email}
-              aria-label="Email notifications"
-            />
-          </div>
-          <div className="flex items-center justify-between p-3 bg-muted/30 rounded-lg hover:bg-muted/50 transition-colors">
-            <Label htmlFor="push-notifications" className="flex flex-col space-y-1 cursor-pointer">
-              <span>Push Notifications</span>
-              <span className="font-normal leading-snug text-muted-foreground text-sm">
-                Get real-time alerts on your mobile device (if app supported).
-              </span>
-            </Label>
-            <Switch
-              id="push-notifications"
-              defaultChecked={userSettings.notifications.push}
-              aria-label="Push notifications"
-            />
-          </div>
-          <Button className="shadow-lg hover:shadow-primary/40">Save Preferences</Button>
-        </CardContent>
-      </Card>
       
-      <Card className={cardHoverEffect}>
-        <CardHeader>
-          <CardTitle className="font-headline text-xl flex items-center gap-2">
-            <ShieldCheck className="h-6 w-6 text-primary/80" />
-            Security
-          </CardTitle>
-          <CardDescription>Manage your account security settings.</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-           <div>
-            <Button variant="outline" className="w-full sm:w-auto shadow-sm hover:shadow-accent/30">Change Password</Button>
-           </div>
-           <div>
-            <Button variant="outline" className="w-full sm:w-auto shadow-sm hover:shadow-accent/30">Enable Two-Factor Authentication</Button>
-           </div>
-        </CardContent>
-      </Card>
+      
+      
     </div>
   );
 }
