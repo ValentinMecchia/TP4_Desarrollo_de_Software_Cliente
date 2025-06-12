@@ -25,6 +25,33 @@ It does not require any backend services like Firebase for its core functionalit
 *   **Data Source**: The application relies on mock data defined directly within the page components (e.g., for assets, portfolios, news).
 *   **API Client**: The generic API client (`src/services/apiClient.ts`) has been removed as it was primarily for interacting with a backend.
 
+## Migración a Vite + React (JSX)
+
+Este proyecto ha migrado de Next.js (TSX) a Vite + React (JSX).  
+Asegúrate de tener los siguientes archivos de configuración:
+
+- `vite.config.js` en la raíz del proyecto.
+- Entrypoint en `src/main.jsx` y tu app en `src/App.jsx`.
+- Todos los archivos de componentes y páginas deben ser `.jsx`.
+
+### Instalación y ejecución
+
+1. Instala dependencias:
+    ```bash
+    npm install
+    ```
+
+2. Ejecuta el servidor de desarrollo:
+    ```bash
+    npm run dev
+    ```
+
+    La app estará disponible en `http://localhost:5173` (por defecto con Vite).
+
+### Configuración de Tailwind
+
+Asegúrate de que `tailwind.config.ts` esté exportando con `module.exports` y que los paths incluyan `.jsx`.
+
 ## Hosting
 This frontend-only application can be deployed to any static hosting provider or platforms that support Next.js builds (like Vercel, Netlify, GitHub Pages after export, etc.) for free or at low cost.
 
