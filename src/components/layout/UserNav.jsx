@@ -1,7 +1,9 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
+import { API_BASE_URL } from "@/constants/api";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -11,13 +13,11 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Settings } from "lucide-react";
-import { LogOut } from "lucide-react";
+import { Settings, LogOut } from "lucide-react";
 import { ROUTES } from "@/constants/routes";
 import { Link } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 
-// Mock user profile for display
 const mockUserProfile = {
   displayName: "Demo User",
   email: "demo@example.com",
@@ -26,6 +26,34 @@ const mockUserProfile = {
 
 export function UserNav() {
   const { user, signOut } = useAuth();
+  const [profile, setProfile] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  // Obtener el id del usuario desde el contexto, o usar el id del user si está
+  const userId = user?.id; // o user?.uid, como tengas el id
+
+  useEffect(() => {
+    async function fetchUserProfile() {
+      if (!userId) {
+        setLoading(false);
+        return;
+      }
+      try {
+        const res = await fetch(`${API_BASE_URL}/api/users/${userId}`, { credentials: "include" });
+        if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+        let data = await res.json();
+        data = data.nickName;
+        setProfile(data);
+      } catch (error) {
+        console.error("Failed to fetch user profile:", error);
+        setProfile(null);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchUserProfile();
+  }, [userId]);
+
   const getInitials = (name) => {
     if (!name) return "U";
     const names = name.split(" ");
@@ -35,30 +63,27 @@ export function UserNav() {
     return name.substring(0, 2).toUpperCase();
   };
 
+  const displayName = profile || user?.displayName || mockUserProfile.displayName;
+  const email = profile?.email || user?.email || mockUserProfile.email;
+  const photoURL = profile?.photoURL || user?.photoURL || mockUserProfile.photoURL;
+
+  if (loading) return null; // o un spinner
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" className="relative h-9 w-9 rounded-full">
           <Avatar className="h-9 w-9">
-            <AvatarImage
-              src={user?.photoURL || mockUserProfile.photoURL}
-              alt={user?.displayName || mockUserProfile.displayName || "User avatar"}
-            />
-            <AvatarFallback>
-              {getInitials(user?.displayName || mockUserProfile.displayName)}
-            </AvatarFallback>
+            <AvatarImage src={photoURL} alt={displayName || "User avatar"} />
+            <AvatarFallback>{getInitials(displayName)}</AvatarFallback>
           </Avatar>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-56" align="end" forceMount>
         <DropdownMenuLabel className="font-normal">
           <div className="flex flex-col space-y-1">
-            <p className="text-sm font-medium leading-none">
-              {user?.displayName || mockUserProfile.displayName || "User"}
-            </p>
-            <p className="text-xs leading-none text-muted-foreground">
-              {user?.email || mockUserProfile.email}
-            </p>
+            <p className="text-sm font-medium leading-none">{displayName || "User"}</p>
+            <p className="text-xs leading-none text-muted-foreground">{email}</p>
           </div>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
