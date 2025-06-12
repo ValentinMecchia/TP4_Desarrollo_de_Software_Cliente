@@ -11,7 +11,7 @@ export function Logo({ size = 'md', className, showText = true }) {
       <ShieldCheck className="text-primary" size={iconSize} />
       {showText && (
         <span className={`font-headline font-bold text-primary ${textSize}`}>
-          Smartfolio Sentinel
+          SmartVest
         </span>
       )}
     </Link>

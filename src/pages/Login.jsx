@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext';
 import { ROUTES } from '@/constants/routes';
-import { ChromeIcon } from 'lucide-react';
+import { FaGoogle } from "react-icons/fa";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Logo } from '@/components/common/Logo';
 import { LoadingSpinner } from '@/components/common/LoadingSpinner';
@@ -43,7 +43,7 @@ export default function LoginPage() {
             <Logo size="lg" />
           </div>
           <CardTitle className="font-headline text-3xl">Bienvenido de Nuevo</CardTitle>
-          <CardDescription>Inicia sesión para acceder a tu dashboard.</CardDescription>
+          <CardDescription>Inicia sesión para acceder a tu cuenta</CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
           <Button
@@ -54,7 +54,7 @@ export default function LoginPage() {
             {loading ? (
               <LoadingSpinner className="mr-2" />
             ) : (
-              <ChromeIcon className="mr-2 h-5 w-5" />
+              <FaGoogle className="mr-2 h-5 w-5" />
             )}
             {loading ? 'Iniciando sesión...' : 'Iniciar Sesión con Google'}
           </Button>
@@ -64,7 +64,7 @@ export default function LoginPage() {
         </CardContent>
       </Card>
       <p className="mt-8 text-sm text-muted-foreground">
-        Smartfolio Sentinel &copy; {new Date().getFullYear()}
+        SmartVest &copy; {new Date().getFullYear()}
       </p>
     </div>
   );

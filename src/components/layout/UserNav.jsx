@@ -29,8 +29,7 @@ export function UserNav() {
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // Obtener el id del usuario desde el contexto, o usar el id del user si está
-  const userId = user?.id; // o user?.uid, como tengas el id
+  const userId = user?.id;
 
   useEffect(() => {
     async function fetchUserProfile() {
@@ -41,8 +40,7 @@ export function UserNav() {
       try {
         const res = await fetch(`${API_BASE_URL}/api/users/${userId}`, { credentials: "include" });
         if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
-        let data = await res.json();
-        data = data.nickName;
+        const data = await res.json();
         setProfile(data);
       } catch (error) {
         console.error("Failed to fetch user profile:", error);
@@ -63,7 +61,7 @@ export function UserNav() {
     return name.substring(0, 2).toUpperCase();
   };
 
-  const displayName = profile || user?.displayName || mockUserProfile.displayName;
+  const displayName = profile?.nickName || user?.displayName || mockUserProfile.displayName;
   const email = profile?.email || user?.email || mockUserProfile.email;
   const photoURL = profile?.photoURL || user?.photoURL || mockUserProfile.photoURL;
 
