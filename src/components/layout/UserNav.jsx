@@ -1,7 +1,9 @@
-'use client';
+"use client";
 
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Button } from '@/components/ui/button';
+import { useEffect, useState } from "react";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
+import { API_BASE_URL } from "@/constants/api";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -10,12 +12,12 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import { Settings } from 'lucide-react';
-import { ROUTES } from '@/constants/routes';
-import { Link } from 'react-router-dom';
+} from "@/components/ui/dropdown-menu";
+import { Settings, LogOut } from "lucide-react";
+import { ROUTES } from "@/constants/routes";
+import { Link } from "react-router-dom";
+import { useAuth } from "@/contexts/AuthContext";
 
-// Mock user profile for display
 const mockUserProfile = {
   displayName: "Demo User",
   email: "demo@example.com",
@@ -23,33 +25,63 @@ const mockUserProfile = {
 };
 
 export function UserNav() {
+  const { user, signOut } = useAuth();
+  const [profile, setProfile] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  const userId = user?.id;
+
+  useEffect(() => {
+    async function fetchUserProfile() {
+      if (!userId) {
+        setLoading(false);
+        return;
+      }
+      try {
+        const res = await fetch(`${API_BASE_URL}/api/users/${userId}`, { credentials: "include" });
+        if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+        const data = await res.json();
+        setProfile(data);
+      } catch (error) {
+        console.error("Failed to fetch user profile:", error);
+        setProfile(null);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchUserProfile();
+  }, [userId]);
+
   const getInitials = (name) => {
-    if (!name) return 'U'; // User initial
-    const names = name.split(' ');
+    if (!name) return "U";
+    const names = name.split(" ");
     if (names.length > 1) {
       return `${names[0][0]}${names[names.length - 1][0]}`.toUpperCase();
     }
     return name.substring(0, 2).toUpperCase();
   };
 
+  const displayName = profile?.nickName || user?.displayName || mockUserProfile.displayName;
+  const email = profile?.email || user?.email || mockUserProfile.email;
+  const photoURL = profile?.photoURL || user?.photoURL || mockUserProfile.photoURL;
+
+  if (loading) return null; // o un spinner
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" className="relative h-9 w-9 rounded-full">
           <Avatar className="h-9 w-9">
-            <AvatarImage
-              src={mockUserProfile.photoURL || undefined}
-              alt={mockUserProfile.displayName || 'User avatar'}
-            />
-            <AvatarFallback>{getInitials(mockUserProfile.displayName)}</AvatarFallback>
+            <AvatarImage src={photoURL} alt={displayName || "User avatar"} />
+            <AvatarFallback>{getInitials(displayName)}</AvatarFallback>
           </Avatar>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-56" align="end" forceMount>
         <DropdownMenuLabel className="font-normal">
           <div className="flex flex-col space-y-1">
-            <p className="text-sm font-medium leading-none">{mockUserProfile.displayName || 'User'}</p>
-            <p className="text-xs leading-none text-muted-foreground">{mockUserProfile.email}</p>
+            <p className="text-sm font-medium leading-none">{displayName || "User"}</p>
+            <p className="text-xs leading-none text-muted-foreground">{email}</p>
           </div>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
@@ -57,8 +89,12 @@ export function UserNav() {
           <DropdownMenuItem asChild>
             <Link to={ROUTES.SETTINGS} className="cursor-pointer">
               <Settings className="mr-2 h-4 w-4" />
-              <span>Settings</span>
+              <span>Configuración</span>
             </Link>
+          </DropdownMenuItem>
+          <DropdownMenuItem onClick={signOut} className="cursor-pointer">
+            <LogOut className="mr-2 h-4 w-4" />
+            <span>Cerrar sesión</span>
           </DropdownMenuItem>
         </DropdownMenuGroup>
       </DropdownMenuContent>
