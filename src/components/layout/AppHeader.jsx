@@ -25,9 +25,8 @@ export default function AppHeader() {
             </Sheet>
           </div>
           <div className="hidden md:block">
-            <Logo size="md" showText={false} />
+            <Logo size="sm" showText={false} />
           </div>
-          <h1 className="text-xl font-headline ml-2 md:ml-4">Smartfolio Sentinel</h1>
         </div>
         <div className="flex items-center space-x-2 sm:space-x-4">
           <ThemeToggle />
