@@ -10,9 +10,9 @@ import { Logo } from '@/components/common/Logo';
 
 const navItems = [
   { href: ROUTES.DASHBOARD, label: 'Dashboard', icon: LayoutDashboard },
-  { href: ROUTES.PORTFOLIOS, label: 'Portfolios', icon: Briefcase },
-  { href: ROUTES.ASSETS, label: 'Assets', icon: BarChart2 },
-  { href: ROUTES.NEWS, label: 'News & Insights', icon: Newspaper },
+  { href: ROUTES.PORTFOLIOS, label: 'Portafolios', icon: Briefcase },
+  { href: ROUTES.ASSETS, label: 'Acciones', icon: BarChart2 },
+  { href: ROUTES.NEWS, label: 'Noticias', icon: Newspaper },
   
 ];
 
