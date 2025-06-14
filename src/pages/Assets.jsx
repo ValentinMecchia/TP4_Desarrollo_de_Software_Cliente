@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { API_BASE_URL } from "@/constants/api";
 import AddAssetModal from "@/components/assets/AddAssetModal";
+import { motion, AnimatePresence } from "framer-motion";
 
 // Vista compacta de detalles de asset (similar a AssetDetailsCompact del modal)
 function AssetDetailsCompact({ symbol, onBack }) {
@@ -354,197 +355,226 @@ export default function AssetsPage() {
             alert("❌ Error al agregar el asset a tu portafolio.");
         }
     };
-    if (loadingAssets) return <p className="p-4">Cargando assets...</p>;
-    if (errorAssets) return <p className="p-4 text-red-500">Error: {errorAssets}</p>;
+    if (loadingAssets) return (
+      <AnimatePresence>
+        <motion.div
+          className="p-4"
+          initial={{ opacity: 0, y: 40, scale: 0.97 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          exit={{ opacity: 0, y: -40, scale: 0.97 }}
+          transition={{ duration: 0.5, type: "spring" }}
+        >
+          Cargando assets...
+        </motion.div>
+      </AnimatePresence>
+    );
+    if (errorAssets) return (
+      <AnimatePresence>
+        <motion.div
+          className="p-4 text-red-500"
+          initial={{ opacity: 0, y: 40, scale: 0.97 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          exit={{ opacity: 0, y: -40, scale: 0.97 }}
+          transition={{ duration: 0.5, type: "spring" }}
+        >
+          Error: {errorAssets}
+        </motion.div>
+      </AnimatePresence>
+    );
 
-    // Agrega el gráfico de precios de Apple al render principal
     return (
-        <div className="container mx-auto py-8 px-4 sm:px-6 lg:px-8">
-            {/* Barra de búsqueda de ancho completo */}
-            <form onSubmit={handleSearch} className="flex w-full gap-2 mb-8">
-                <Input
-                    placeholder="Buscar asset por nombre o símbolo (ej: AAPL, Tesla, etc)"
-                    value={search}
-                    onChange={e => setSearch(e.target.value)}
-                    className="flex-1"
-                />
-                <Button type="submit" disabled={!search.trim()}>
-                    <Search className="h-4 w-4" />
-                    <span className="ml-2">Buscar</span>
-                </Button>
-            </form>
+        <motion.div
+          className="container mx-auto py-8 px-4 sm:px-6 lg:px-8"
+          initial={{ opacity: 0, y: 40, scale: 0.97 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          exit={{ opacity: 0, y: -40, scale: 0.97 }}
+          transition={{ duration: 0.5, type: "spring" }}
+        >
+          {/* Barra de búsqueda de ancho completo */}
+          <form onSubmit={handleSearch} className="flex w-full gap-2 mb-8">
+              <Input
+                  placeholder="Buscar asset por nombre o símbolo (ej: AAPL, Tesla, etc)"
+                  value={search}
+                  onChange={e => setSearch(e.target.value)}
+                  className="flex-1"
+              />
+              <Button type="submit" disabled={!search.trim()}>
+                  <Search className="h-4 w-4" />
+                  <span className="ml-2">Buscar</span>
+              </Button>
+          </form>
 
-            {/* Detalle compacto si hay símbolo seleccionado */}
-            {selectedSymbol && (
-                <Card className="mb-8 w-full">
-                    <CardHeader>
-                        <CardTitle>Detalles del Asset</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                        <AssetDetailsCompact
-                            symbol={selectedSymbol}
-                            onBack={() => setSelectedSymbol(null)}
-                        />
-                    </CardContent>
-                </Card>
-            )}
+          {/* Detalle compacto si hay símbolo seleccionado */}
+          {selectedSymbol && (
+              <Card className="mb-8 w-full">
+                  <CardHeader>
+                      <CardTitle>Detalles del Asset</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                      <AssetDetailsCompact
+                          symbol={selectedSymbol}
+                          onBack={() => setSelectedSymbol(null)}
+                      />
+                  </CardContent>
+              </Card>
+          )}
 
-            <AddAssetModal
-                open={showAddModal}
-                onClose={() => setShowAddModal(false)}
-                onSelect={() => setShowAddModal(false)}
-                portfolioId={null} // No necesitas portfolioId aquí
-            />
+          <AddAssetModal
+              open={showAddModal}
+              onClose={() => setShowAddModal(false)}
+              onSelect={() => setShowAddModal(false)}
+              portfolioId={null} // No necesitas portfolioId aquí
+          />
 
-            {searchResults.length > 0 && !selectedSymbol && (
-                <Card className={`mb-8 w-full ${cardHoverEffect}`}>
-                    <CardHeader>
-                        <CardTitle className="font-headline text-2xl flex items-center gap-2">
-                            <Sparkles className="h-7 w-7 text-primary/90" />
-                            Resultados de búsqueda
-                        </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                        <Table>
-                            <TableHeader>
-                                <TableRow>
-                                    <TableHead>Nombre</TableHead>
-                                    <TableHead>Símbolo</TableHead>
-                                    <TableHead className="text-right">Precio</TableHead>
-                                    <TableHead className="text-right">Var</TableHead>
-                                    <TableHead className="text-right">Exchange</TableHead>
-                                    <TableHead className="text-right">Agregar</TableHead>
-                                </TableRow>
-                            </TableHeader>
-                            <TableBody>
-                                {searchResults.map((asset) => (
-                                    <TableRow key={asset.symbol}>
-                                        <TableCell>{asset.shortname || asset.longName || asset.symbol}</TableCell>
-                                        <TableCell>{asset.symbol}</TableCell>
-                                        <TableCell className="text-right">
-                                            {asset.regularMarketPrice !== undefined && asset.regularMarketPrice !== null && !isNaN(asset.regularMarketPrice)
-                                                ? `$${Number(asset.regularMarketPrice).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
-                                                : "-"
-                                            }
-                                        </TableCell>
-                                        <TableCell className={`text-right ${asset.regularMarketChange !== undefined && asset.regularMarketChange !== null && !isNaN(asset.regularMarketChange) && asset.regularMarketChange >= 0
-                                                ? "text-positive"
-                                                : "text-negative"
-                                            }`}>
-                                            {asset.regularMarketChange !== undefined && asset.regularMarketChange !== null && !isNaN(asset.regularMarketChange)
-                                                ? `${Number(asset.regularMarketChange).toFixed(2)} (${asset.regularMarketChangePercent !== undefined && asset.regularMarketChangePercent !== null && !isNaN(asset.regularMarketChangePercent)
-                                                    ? Number(asset.regularMarketChangePercent).toFixed(2)
-                                                    : "-"
-                                                }%)`
-                                                : "-"}
-                                        </TableCell>
-                                        <TableCell className="text-right">{asset.exchange || "-"}</TableCell>
-                                        <TableCell className="text-right">
-                                            <Button
-                                                size="icon"
-                                                variant="outline"
-                                                onClick={() => handleAddAssetToPortfolio(asset)}
-                                                aria-label="Agregar a portafolio"
-                                            >
-                                                <PlusCircle className="h-5 w-5" />
-                                            </Button>
-                                        </TableCell>
-                                    </TableRow>
-                                ))}
-                            </TableBody>
-                        </Table>
-                    </CardContent>
-                </Card>
-            )}
+          {searchResults.length > 0 && !selectedSymbol && (
+              <Card className={`mb-8 w-full ${cardHoverEffect}`}>
+                  <CardHeader>
+                      <CardTitle className="font-headline text-2xl flex items-center gap-2">
+                          <Sparkles className="h-7 w-7 text-primary/90" />
+                          Resultados de búsqueda
+                      </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                      <Table>
+                          <TableHeader>
+                              <TableRow>
+                                  <TableHead>Nombre</TableHead>
+                                  <TableHead>Símbolo</TableHead>
+                                  <TableHead className="text-right">Precio</TableHead>
+                                  <TableHead className="text-right">Var</TableHead>
+                                  <TableHead className="text-right">Exchange</TableHead>
+                                  <TableHead className="text-right">Agregar</TableHead>
+                              </TableRow>
+                          </TableHeader>
+                          <TableBody>
+                              {searchResults.map((asset) => (
+                                  <TableRow key={asset.symbol}>
+                                      <TableCell>{asset.shortname || asset.longName || asset.symbol}</TableCell>
+                                      <TableCell>{asset.symbol}</TableCell>
+                                      <TableCell className="text-right">
+                                          {asset.regularMarketPrice !== undefined && asset.regularMarketPrice !== null && !isNaN(asset.regularMarketPrice)
+                                              ? `$${Number(asset.regularMarketPrice).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
+                                              : "-"
+                                          }
+                                      </TableCell>
+                                      <TableCell className={`text-right ${asset.regularMarketChange !== undefined && asset.regularMarketChange !== null && !isNaN(asset.regularMarketChange) && asset.regularMarketChange >= 0
+                                              ? "text-positive"
+                                              : "text-negative"
+                                          }`}>
+                                          {asset.regularMarketChange !== undefined && asset.regularMarketChange !== null && !isNaN(asset.regularMarketChange)
+                                              ? `${Number(asset.regularMarketChange).toFixed(2)} (${asset.regularMarketChangePercent !== undefined && asset.regularMarketChangePercent !== null && !isNaN(asset.regularMarketChangePercent)
+                                                  ? Number(asset.regularMarketChangePercent).toFixed(2)
+                                                  : "-"
+                                              }%)`
+                                              : "-"}
+                                      </TableCell>
+                                      <TableCell className="text-right">{asset.exchange || "-"}</TableCell>
+                                      <TableCell className="text-right">
+                                          <Button
+                                              size="icon"
+                                              variant="outline"
+                                              onClick={() => handleAddAssetToPortfolio(asset)}
+                                              aria-label="Agregar a portafolio"
+                                          >
+                                              <PlusCircle className="h-5 w-5" />
+                                          </Button>
+                                      </TableCell>
+                                  </TableRow>
+                              ))}
+                          </TableBody>
+                      </Table>
+                  </CardContent>
+              </Card>
+          )}
 
 
 
-            {/* Asset Overview local (mock) solo si no hay búsqueda activa */}
-            {searchResults.length === 0 && (
-                <>
-                    <Card className={`mb-8 w-full ${cardHoverEffect}`}>
-                        <CardHeader className="flex flex-row items-center justify-between space-x-4 pb-4">
-                            <div>
-                                <CardTitle className="font-headline text-2xl flex items-center gap-2">
-                                    <WalletCards className="h-7 w-7 text-primary/90" />
-                                    Assets en tendencia
-                                </CardTitle>
-                                <CardDescription>
-                                    Sigue en tiempo real las acciones que son tendencias en el mercado
-                                </CardDescription>
-                            </div>
-                        </CardHeader>
-                        <CardContent>
-                            <Table>
-                                <TableHeader>
-                                    <TableRow>
-                                        <TableHead>Asset Name</TableHead>
-                                        <TableHead>Symbol</TableHead>
-                                        <TableHead className="text-right">Price</TableHead>
-                                        <TableHead className="text-right">Change (24h)</TableHead>
-                                        {/* <TableHead className="text-right">Market Cap</TableHead> */}
-                                        <TableHead className="text-right">Agregar</TableHead>
-                                    </TableRow>
-                                </TableHeader>
-                                <TableBody>
-                                    {trendingAssets.map(asset => (
-                                        <TableRow key={asset.symbol}>
-                                            <TableCell>{asset.name}</TableCell>
-                                            <TableCell>{asset.symbol}</TableCell>
-                                            <TableCell className="text-right">
-                                                {asset.price !== undefined && asset.price !== null && !isNaN(asset.price)
-                                                    ? `$${Number(asset.price).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
-                                                    : "-"
-                                                }
-                                            </TableCell>
-                                            <TableCell className={`text-right ${asset.change !== undefined && asset.change !== null && !isNaN(asset.change) && asset.change >= 0
-                                                    ? "text-positive"
-                                                    : "text-negative"
-                                                }`}>
-                                                {asset.change !== undefined && asset.change !== null && !isNaN(asset.change)
-                                                    ? `${Number(asset.change).toFixed(2)} (${asset.changePercent !== undefined && asset.changePercent !== null && !isNaN(asset.changePercent)
-                                                        ? Number(asset.changePercent).toFixed(2)
-                                                        : "-"
-                                                    }%)`
-                                                    : "-"}
-                                            </TableCell>
-                                            {/* <TableCell className="text-right">
-                                                {asset.marketCap !== undefined && asset.marketCap !== null
-                                                    ? `$${Number(asset.marketCap).toLocaleString()}`
-                                                    : "-"}
-                                            </TableCell> */}
-                                            <TableCell className="text-right">
-                                                <Button
-                                                    size="icon"
-                                                    variant="outline"
-                                                    onClick={() => handleAddAssetToPortfolio(asset)}
-                                                    aria-label="Agregar a portafolio"
-                                                >
-                                                    <PlusCircle className="h-5 w-5" />
-                                                </Button>
-                                            </TableCell>
-                                        </TableRow>
-                                    ))}
-                                </TableBody>
-                            </Table>
-                        </CardContent>
-                    </Card>
+          {/* Asset Overview local (mock) solo si no hay búsqueda activa */}
+          {searchResults.length === 0 && (
+              <>
+                  <Card className={`mb-8 w-full ${cardHoverEffect}`}>
+                      <CardHeader className="flex flex-row items-center justify-between space-x-4 pb-4">
+                          <div>
+                              <CardTitle className="font-headline text-2xl flex items-center gap-2">
+                                  <WalletCards className="h-7 w-7 text-primary/90" />
+                                  Acciones en tendencia
+                              </CardTitle>
+                              <CardDescription>
+                                  Sigue en tiempo real las acciones que son tendencias en el mercado
+                              </CardDescription>
+                          </div>
+                      </CardHeader>
+                      <CardContent>
+                          <Table>
+                              <TableHeader>
+                                  <TableRow>
+                                      <TableHead>Asset Name</TableHead>
+                                      <TableHead>Symbol</TableHead>
+                                      <TableHead className="text-right">Price</TableHead>
+                                      <TableHead className="text-right">Change (24h)</TableHead>
+                                      {/* <TableHead className="text-right">Market Cap</TableHead> */}
+                                      <TableHead className="text-right">Agregar</TableHead>
+                                  </TableRow>
+                              </TableHeader>
+                              <TableBody>
+                                  {trendingAssets.map(asset => (
+                                      <TableRow key={asset.symbol}>
+                                          <TableCell>{asset.name}</TableCell>
+                                          <TableCell>{asset.symbol}</TableCell>
+                                          <TableCell className="text-right">
+                                              {asset.price !== undefined && asset.price !== null && !isNaN(asset.price)
+                                                  ? `$${Number(asset.price).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
+                                                  : "-"
+                                              }
+                                          </TableCell>
+                                          <TableCell className={`text-right ${asset.change !== undefined && asset.change !== null && !isNaN(asset.change) && asset.change >= 0
+                                                  ? "text-positive"
+                                                  : "text-negative"
+                                              }`}>
+                                              {asset.change !== undefined && asset.change !== null && !isNaN(asset.change)
+                                                  ? `${Number(asset.change).toFixed(2)} (${asset.changePercent !== undefined && asset.changePercent !== null && !isNaN(asset.changePercent)
+                                                      ? Number(asset.changePercent).toFixed(2)
+                                                      : "-"
+                                                  }%)`
+                                                  : "-"}
+                                          </TableCell>
+                                          {/* <TableCell className="text-right">
+                                              {asset.marketCap !== undefined && asset.marketCap !== null
+                                                  ? `$${Number(asset.marketCap).toLocaleString()}`
+                                                  : "-"}
+                                          </TableCell> */}
+                                          <TableCell className="text-right">
+                                              <Button
+                                                  size="icon"
+                                                  variant="outline"
+                                                  onClick={() => handleAddAssetToPortfolio(asset)}
+                                                  aria-label="Agregar a portafolio"
+                                              >
+                                                  <PlusCircle className="h-5 w-5" />
+                                              </Button>
+                                          </TableCell>
+                                      </TableRow>
+                                  ))}
+                              </TableBody>
+                          </Table>
+                      </CardContent>
+                  </Card>
+                  
+
+
                     
-
-
-                    
-                    {/* Gráfico de precios intradiario de Apple */}
-                    <Card className="mb-8 w-full">
-                        <CardHeader>
-                            <CardTitle>Gráfico de precios intradiario de la accion mas operada del dia:(AAPL)</CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                            <AssetPriceChart />
-                        </CardContent>
-                    </Card>
-                </>
-            )}
-        </div>
+                  {/* Gráfico de precios intradiario de Apple */}
+                  <Card className="mb-8 w-full">
+                      <CardHeader>
+                          <CardTitle>Gráfico de precios intradiario de la accion mas operada del dia: (AAPL)</CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                          <AssetPriceChart />
+                      </CardContent>
+                  </Card>
+              </>
+          )}
+        </motion.div>
     );
 }
 

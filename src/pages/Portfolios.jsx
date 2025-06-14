@@ -20,6 +20,7 @@ import CreatePortfolioModal from "@/components/portfolios/CreatePortfolioModal";
 import EditPortfolioModal from "@/components/portfolios/EditPortfolioModal";
 import PortfolioDetails from "./PortfolioDetails";
 import { Input } from "@/components/ui/input";
+import { motion, AnimatePresence } from "framer-motion";
 
 const cardHoverEffect =
   "transition-all duration-300 ease-in-out hover:shadow-2xl hover:-translate-y-1 hover:shadow-primary/20 border border-border hover:border-primary/30";
@@ -163,24 +164,47 @@ export default function PortfoliosPage() {
 
   if (loading) {
     return (
-      <div className="flex flex-col items-center justify-center py-16">
-        <span className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full mb-4"></span>
-        <p className="text-lg text-muted-foreground">Cargando portfolios...</p>
-      </div>
+      <AnimatePresence>
+        <motion.div
+          className="flex flex-col items-center justify-center py-16"
+          initial={{ opacity: 0, y: 40, scale: 0.97 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          exit={{ opacity: 0, y: -40, scale: 0.97 }}
+          transition={{ duration: 0.5, type: "spring" }}
+        >
+          <span className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full mb-4"></span>
+          <p className="text-lg text-muted-foreground">Cargando portfolios...</p>
+        </motion.div>
+      </AnimatePresence>
     );
   }
 
   if (selectedPortfolioId) {
     return (
-      <PortfolioDetails
-        portfolioId={selectedPortfolioId}
-        onBack={handleBackFromDetails}
-      />
+      <AnimatePresence>
+        <motion.div
+          initial={{ opacity: 0, y: 40, scale: 0.97 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          exit={{ opacity: 0, y: -40, scale: 0.97 }}
+          transition={{ duration: 0.5, type: "spring" }}
+        >
+          <PortfolioDetails
+            portfolioId={selectedPortfolioId}
+            onBack={handleBackFromDetails}
+          />
+        </motion.div>
+      </AnimatePresence>
     );
   }
 
   return (
-    <div className="container mx-auto py-8">
+    <motion.div
+      className="container mx-auto py-8"
+      initial={{ opacity: 0, y: 40, scale: 0.97 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      exit={{ opacity: 0, y: -40, scale: 0.97 }}
+      transition={{ duration: 0.5, type: "spring" }}
+    >
       <CreatePortfolioModal
         open={showCreate}
         onClose={() => setShowCreate(false)}
@@ -310,6 +334,6 @@ export default function PortfoliosPage() {
           ))}
         </div>
       )}
-    </div>
+    </motion.div>
   );
 }

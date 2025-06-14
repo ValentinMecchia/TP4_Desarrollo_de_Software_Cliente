@@ -4,8 +4,6 @@ import { DollarSign, TrendingUp, PieChart, AlertCircle, Activity, BarChart3, Che
 import { API_BASE_URL } from "@/constants/api";
 import { useAuth } from "@/contexts/AuthContext";
 import { PieChart as RechartsPieChart, Pie, Cell, Tooltip as PieTooltip, Legend as PieLegend } from "recharts";
-
-// Animaciones con Framer Motion
 import { motion, AnimatePresence } from "framer-motion";
 
 const cardHoverEffect = "transition-all duration-300 ease-in-out hover:shadow-2xl hover:-translate-y-1 hover:shadow-primary/20 border border-border hover:border-primary/30";
@@ -236,151 +234,227 @@ export default function DashboardPage() {
 
   if (loading) {
     return (
-      <div className="flex flex-col items-center justify-center py-16">
+      <motion.div
+        className="flex flex-col items-center justify-center py-16"
+        initial={{ opacity: 0, scale: 0.95, y: 40 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        exit={{ opacity: 0, scale: 0.95, y: -40 }}
+        transition={{ duration: 0.7, type: "spring" }}
+      >
         <span className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full mb-4"></span>
         <p className="text-lg text-muted-foreground">Cargando dashboard...</p>
-      </div>
+      </motion.div>
     );
   }
 
   return (
-    <div className="container mx-auto py-8">
-      <h1 className="text-3xl sm:text-4xl font-headline font-bold mb-10">
+    <motion.div
+      className="container mx-auto py-8"
+      initial={{ opacity: 0, scale: 0.97, y: 60 }}
+      animate={{ opacity: 1, scale: 1, y: 0 }}
+      exit={{ opacity: 0, scale: 0.97, y: -60 }}
+      transition={{ duration: 0.7, type: "spring" }}
+    >
+      <motion.h1
+        className="text-3xl sm:text-4xl font-headline font-bold mb-10"
+        initial={{ opacity: 0, y: -40 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.7, type: "spring" }}
+      >
         <span className="bg-clip-text text-transparent bg-gradient-to-r from-primary via-accent to-secondary-foreground">
           Mi Dashboard
         </span>
-      </h1>
-      
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4 mb-8">
-        <Card className={cardHoverEffect}>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Valor total del portafolio</CardTitle>
-            <DollarSign className="h-5 w-5 text-primary" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">${portfolioSummary?.totalValue?.toLocaleString(undefined, { minimumFractionDigits: 2 })}</div>
-            <p className={`text-xs ${portfolioSummary?.todayChange >= 0 ? 'text-positive' : 'text-negative'}`}>
-              {portfolioSummary?.todayChange >= 0 ? '+' : ''}
-              ${portfolioSummary?.todayChange?.toLocaleString(undefined, { minimumFractionDigits: 2 })} ({portfolioSummary?.todayChangePercent}%) hoy
-            </p>
-          </CardContent>
-        </Card>
-        <Card className={cardHoverEffect}>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Retorno total</CardTitle>
-            <TrendingUp className="h-5 w-5 text-positive" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">${portfolioSummary?.overallReturn?.toLocaleString(undefined, { minimumFractionDigits: 2 })}</div>
-            <p className={`text-xs ${portfolioSummary?.overallReturn >= 0 ? 'text-positive' : 'text-negative'}`}>
-              {portfolioSummary?.overallReturn >= 0 ? '+' : ''}
-              {portfolioSummary?.overallReturnPercent}% total
-            </p>
-          </CardContent>
-        </Card>
-        <Card className={cardHoverEffect}>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Mejor rendimiento (hoy)</CardTitle>
-            <TrendingUp className="h-5 w-5 text-positive" />
-          </CardHeader>
-          <CardContent>
-            {topAsset && typeof topAsset.changePercent === "number" ? (
-              <>
-                <div className="text-lg font-semibold">{topAsset.name} ({topAsset.symbol})</div>
-                <p className={`text-xs ${topAsset.changePercent >= 0 ? "text-positive" : "text-negative"}`}>
-                  {topAsset.changePercent >= 0 ? "+" : ""}
-                  {topAsset.changePercent.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}%
-                </p>
-              </>
-            ) : (
-              <div className="text-muted-foreground text-sm">Sin datos</div>
-            )}
-          </CardContent>
-        </Card>
-        <Card className={cardHoverEffect}>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Peor rendimiento (hoy)</CardTitle>
-            <AlertCircle className="h-5 w-5 text-negative" />
-          </CardHeader>
-          <CardContent>
-            {worstAsset && typeof worstAsset.changePercent === "number" ? (
-              <>
-                <div className="text-lg font-semibold">{worstAsset.name} ({worstAsset.symbol})</div>
-                <p className={`text-xs ${worstAsset.changePercent >= 0 ? "text-positive" : "text-negative"}`}>
-                  {worstAsset.changePercent >= 0 ? "+" : ""}
-                  {worstAsset.changePercent.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}%
-                </p>
-              </>
-            ) : (
-              <div className="text-muted-foreground text-sm">Sin datos</div>
-            )}
-          </CardContent>
-        </Card>
-      </div>
+      </motion.h1>
 
-      <div className="grid gap-6 md:grid-cols-1 lg:grid-cols-2">
-        {/* Carrusel de gráficos de torta por portafolio */}
-        <Card className={`w-full ${cardHoverEffect}`}>
-          <CardHeader>
-            <CardTitle className="font-headline text-xl flex items-center gap-2">
-              <BarChart3 className="h-6 w-6 text-primary/80" /> Distribución de activos por portafolio
-            </CardTitle>
-            <CardDescription>Visualiza la composición de cada portafolio por cantidad de acciones.</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <PortfolioPieCarousel portfolios={portfolios} />
-          </CardContent>
-        </Card>
-        {/* Actividad reciente con animaciones y eliminados */}
-        <Card className={`w-full ${cardHoverEffect}`}>
-          <CardHeader>
-            <CardTitle className="font-headline text-xl flex items-center gap-2">
-             <Activity className="h-6 w-6 text-primary/80" /> Recientemente Agregados
-            </CardTitle>
-            <CardDescription>Últimos movimientos en tus portafolios.</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <ul className="space-y-3 text-sm text-muted-foreground">
-              {activityLoading ? (
-                <li className="p-2">Cargando actividad...</li>
-              ) : recentActivity.length === 0 ? (
-                <li className="p-2">Sin actividad reciente.</li>
-              ) : (
-                recentActivity.map((act, idx) => (
-                  <li
-                    key={act.symbol + act.action + idx}
-                    className={`flex items-center gap-2 p-2 rounded-md transition-colors
-                      ${act.type === "remove"
-                        ? "bg-red-100/60 dark:bg-red-900/30"
-                        : "bg-muted/30 hover:bg-muted/50"}
-                    `}
-                  >
-                    {act.type === "remove" ? (
-                      <Trash2 className="h-4 w-4 text-negative" />
-                    ) : (
-                      <PlusCircle className="h-4 w-4 text-positive" />
-                    )}
-                    <span>
-                      <span className="font-semibold">{act.action}</span>{" "}
-                      {act.quantity} de {act.symbol} ({act.name})
-                      {act.portfolio && (
-                        <span className="ml-1 text-xs text-muted-foreground">
-                          en <span className="font-semibold">{act.portfolio}</span>
+      <motion.div
+        className="grid gap-6 md:grid-cols-2 lg:grid-cols-4 mb-8"
+        initial="hidden"
+        animate="visible"
+        variants={{
+          hidden: {},
+          visible: {
+            transition: {
+              staggerChildren: 0.13,
+            },
+          },
+        }}
+      >
+        {[0, 1, 2, 3].map((i) => (
+          <motion.div
+            key={i}
+            initial={{ opacity: 0, y: 30, scale: 0.97 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            transition={{ duration: 0.5, type: "spring" }}
+          >
+            {i === 0 && (
+              <Card className={cardHoverEffect}>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium text-muted-foreground">Valor total del portafolio</CardTitle>
+                  <DollarSign className="h-5 w-5 text-primary" />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold">${portfolioSummary?.totalValue?.toLocaleString(undefined, { minimumFractionDigits: 2 })}</div>
+                  <p className={`text-xs ${portfolioSummary?.todayChange >= 0 ? 'text-positive' : 'text-negative'}`}>
+                    {portfolioSummary?.todayChange >= 0 ? '+' : ''}
+                    ${portfolioSummary?.todayChange?.toLocaleString(undefined, { minimumFractionDigits: 2 })} ({portfolioSummary?.todayChangePercent}%) hoy
+                  </p>
+                </CardContent>
+              </Card>
+            )}
+            {i === 1 && (
+              <Card className={cardHoverEffect}>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium text-muted-foreground">Retorno total</CardTitle>
+                  <TrendingUp className="h-5 w-5 text-positive" />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold">${portfolioSummary?.overallReturn?.toLocaleString(undefined, { minimumFractionDigits: 2 })}</div>
+                  <p className={`text-xs ${portfolioSummary?.overallReturn >= 0 ? 'text-positive' : 'text-negative'}`}>
+                    {portfolioSummary?.overallReturn >= 0 ? '+' : ''}
+                    {portfolioSummary?.overallReturnPercent}% total
+                  </p>
+                </CardContent>
+              </Card>
+            )}
+            {i === 2 && (
+              <Card className={cardHoverEffect}>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium text-muted-foreground">Mejor rendimiento (hoy)</CardTitle>
+                  <TrendingUp className="h-5 w-5 text-positive" />
+                </CardHeader>
+                <CardContent>
+                  {topAsset && typeof topAsset.changePercent === "number" ? (
+                    <>
+                      <div className="text-lg font-semibold">{topAsset.name} ({topAsset.symbol})</div>
+                      <p className={`text-xs ${topAsset.changePercent >= 0 ? "text-positive" : "text-negative"}`}>
+                        {topAsset.changePercent >= 0 ? "+" : ""}
+                        {topAsset.changePercent.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}%
+                      </p>
+                    </>
+                  ) : (
+                    <div className="text-muted-foreground text-sm">Sin datos</div>
+                  )}
+                </CardContent>
+              </Card>
+            )}
+            {i === 3 && (
+              <Card className={cardHoverEffect}>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium text-muted-foreground">Peor rendimiento (hoy)</CardTitle>
+                  <AlertCircle className="h-5 w-5 text-negative" />
+                </CardHeader>
+                <CardContent>
+                  {worstAsset && typeof worstAsset.changePercent === "number" ? (
+                    <>
+                      <div className="text-lg font-semibold">{worstAsset.name} ({worstAsset.symbol})</div>
+                      <p className={`text-xs ${worstAsset.changePercent >= 0 ? "text-positive" : "text-negative"}`}>
+                        {worstAsset.changePercent >= 0 ? "+" : ""}
+                        {worstAsset.changePercent.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}%
+                      </p>
+                    </>
+                  ) : (
+                    <div className="text-muted-foreground text-sm">Sin datos</div>
+                  )}
+                </CardContent>
+              </Card>
+            )}
+          </motion.div>
+        ))}
+      </motion.div>
+
+      <motion.div
+        className="grid gap-6 md:grid-cols-1 lg:grid-cols-2"
+        initial="hidden"
+        animate="visible"
+        variants={{
+          hidden: {},
+          visible: {
+            transition: {
+              staggerChildren: 0.18,
+            },
+          },
+        }}
+      >
+        <motion.div
+          initial={{ opacity: 0, y: 40, scale: 0.97 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          exit={{ opacity: 0, y: -40, scale: 0.97 }}
+          transition={{ duration: 0.6, type: "spring" }}
+        >
+          <Card className={`w-full ${cardHoverEffect}`}>
+            <CardHeader>
+              <CardTitle className="font-headline text-xl flex items-center gap-2">
+                <BarChart3 className="h-6 w-6 text-primary/80" /> Distribución de activos por portafolio
+              </CardTitle>
+              <CardDescription>Visualiza la composición de cada portafolio por cantidad de acciones.</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <PortfolioPieCarousel portfolios={portfolios} />
+            </CardContent>
+          </Card>
+        </motion.div>
+        <motion.div
+          initial={{ opacity: 0, y: 40, scale: 0.97 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          exit={{ opacity: 0, y: -40, scale: 0.97 }}
+          transition={{ duration: 0.6, type: "spring" }}
+        >
+          <Card className={`w-full ${cardHoverEffect}`}>
+            <CardHeader>
+              <CardTitle className="font-headline text-xl flex items-center gap-2">
+                <Activity className="h-6 w-6 text-primary/80" /> Recientemente Agregados
+              </CardTitle>
+              <CardDescription>Últimos movimientos en tus portafolios.</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <ul className="space-y-3 text-sm text-muted-foreground">
+                {activityLoading ? (
+                  <li className="p-2">Cargando actividad...</li>
+                ) : recentActivity.length === 0 ? (
+                  <li className="p-2">Sin actividad reciente.</li>
+                ) : (
+                  <AnimatePresence>
+                    {recentActivity.map((act, idx) => (
+                      <motion.li
+                        key={act.symbol + act.action + idx}
+                        className={`flex items-center gap-2 p-2 rounded-md transition-colors
+                          ${act.type === "remove"
+                            ? "bg-red-100/60 dark:bg-red-900/30"
+                            : "bg-muted/30 hover:bg-muted/50"}
+                        `}
+                        initial={{ opacity: 0, x: 30 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        exit={{ opacity: 0, x: -30 }}
+                        transition={{ duration: 0.4, type: "spring" }}
+                      >
+                        {act.type === "remove" ? (
+                          <Trash2 className="h-4 w-4 text-negative" />
+                        ) : (
+                          <PlusCircle className="h-4 w-4 text-positive" />
+                        )}
+                        <span>
+                          <span className="font-semibold">{act.action}</span>{" "}
+                          {act.quantity} de {act.symbol} ({act.name})
+                          {act.portfolio && (
+                            <span className="ml-1 text-xs text-muted-foreground">
+                              en <span className="font-semibold">{act.portfolio}</span>
+                            </span>
+                          )}
+                          {act.date && (
+                            <span className="ml-2 text-xs text-muted-foreground">
+                              {new Date(act.date).toLocaleString()}
+                            </span>
+                          )}
                         </span>
-                      )}
-                      {act.date && (
-                        <span className="ml-2 text-xs text-muted-foreground">
-                          {new Date(act.date).toLocaleString()}
-                        </span>
-                      )}
-                    </span>
-                  </li>
-                ))
-              )}
-            </ul>
-          </CardContent>
-        </Card>
-      </div>
-    </div>
+                      </motion.li>
+                    ))}
+                  </AnimatePresence>
+                )}
+              </ul>
+            </CardContent>
+          </Card>
+        </motion.div>
+      </motion.div>
+    </motion.div>
   );
 }

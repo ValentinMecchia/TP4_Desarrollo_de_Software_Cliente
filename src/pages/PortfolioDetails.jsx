@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { API_BASE_URL } from "@/constants/api";
 import { ChevronLeft, PlusCircle, Trash2, Pencil } from "lucide-react";
 import AddAssetModal from "@/components/assets/AddAssetModal";
+import { motion, AnimatePresence } from "framer-motion";
 
 export default function PortfolioDetails({ portfolioId, onBack }) {
   const [portfolio, setPortfolio] = useState(null);
@@ -223,28 +224,50 @@ export default function PortfolioDetails({ portfolioId, onBack }) {
 
   if (loading) {
     return (
-      <div className="flex flex-col items-center justify-center py-16">
-        <span className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full mb-4"></span>
-        <p className="text-lg text-muted-foreground">Cargando portafolio...</p>
-      </div>
+      <AnimatePresence>
+        <motion.div
+          className="flex flex-col items-center justify-center py-16"
+          initial={{ opacity: 0, y: 40, scale: 0.97 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          exit={{ opacity: 0, y: -40, scale: 0.97 }}
+          transition={{ duration: 0.5, type: "spring" }}
+        >
+          <span className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full mb-4"></span>
+          <p className="text-lg text-muted-foreground">Cargando portafolio...</p>
+        </motion.div>
+      </AnimatePresence>
     );
   }
 
   if (!portfolio) {
     return (
-      <div className="container mx-auto py-8">
-        <Button variant="ghost" onClick={onBack}>
-          <ChevronLeft className="mr-2 h-5 w-5" /> Volver
-        </Button>
-        <p className="mt-8 text-xl text-destructive">
-          Portafolio no encontrado.
-        </p>
-      </div>
+      <AnimatePresence>
+        <motion.div
+          className="container mx-auto py-8"
+          initial={{ opacity: 0, y: 40, scale: 0.97 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          exit={{ opacity: 0, y: -40, scale: 0.97 }}
+          transition={{ duration: 0.5, type: "spring" }}
+        >
+          <Button variant="ghost" onClick={onBack}>
+            <ChevronLeft className="mr-2 h-5 w-5" /> Volver
+          </Button>
+          <p className="mt-8 text-xl text-destructive">
+            Portafolio no encontrado.
+          </p>
+        </motion.div>
+      </AnimatePresence>
     );
   }
 
   return (
-    <div className="container mx-auto py-8 max-w-5xl">
+    <motion.div
+      className="container mx-auto py-8 max-w-5xl"
+      initial={{ opacity: 0, y: 40, scale: 0.97 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      exit={{ opacity: 0, y: -40, scale: 0.97 }}
+      transition={{ duration: 0.5, type: "spring" }}
+    >
       <AddAssetModal
         open={showAddModal}
         onClose={() => setShowAddModal(false)}
@@ -353,13 +376,13 @@ export default function PortfolioDetails({ portfolioId, onBack }) {
                         </td>
                         <td
                           className={`py-2 px-2 text-right ${
-                            asset.realtimeChange >= 0
+                            Number(asset.realtimeChange) >= 0
                               ? "text-green-600 dark:text-green-400"
                               : "text-red-500 dark:text-red-400"
                           }`}
                         >
-                          {asset.realtimeChange >= 0 ? "$" : "$"}
-                          {Number(asset.realtimeChange).toLocaleString(
+                          {Number(asset.realtimeChange) >= 0 ? "+" : ""}
+                          ${Number(asset.realtimeChange).toLocaleString(
                             undefined,
                             {
                               minimumFractionDigits: 2,
@@ -420,6 +443,6 @@ export default function PortfolioDetails({ portfolioId, onBack }) {
           </div>
         </CardContent>
       </Card>
-    </div>
+    </motion.div>
   );
 }
