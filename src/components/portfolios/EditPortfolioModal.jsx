@@ -1,20 +1,28 @@
+// ...create this file...
 import React, { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogFooter, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { API_BASE_URL } from "@/constants/api";
 
-export default function CreatePortfolioModal({ open, onClose, onCreate }) {
-  const [name, setName] = useState("");
-  const [description, setDescription] = useState("");
+export default function EditPortfolioModal({ open, onClose, onEdit, portfolio }) {
+  const [name, setName] = useState(portfolio?.name || "");
+  const [description, setDescription] = useState(portfolio?.description || "");
   const [loading, setLoading] = useState(false);
 
-  const handleCreate = async (e) => {
+  const handleEdit = async (e) => {
     e.preventDefault();
     setLoading(true);
     try {
-      await onCreate({ name, description });
-      setName("");
-      setDescription("");
+      const res = await fetch(`${API_BASE_URL}/api/portfolios/${portfolio.id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ name, description }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data?.error || "Error al editar el portafolio");
+      onEdit(data);
       onClose();
     } catch (err) {
       alert(err.message);
@@ -29,23 +37,23 @@ export default function CreatePortfolioModal({ open, onClose, onCreate }) {
     <Dialog open={open} onOpenChange={v => { if (!v) onClose(); }}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Crear Portafolio</DialogTitle>
+          <DialogTitle>Editar Portafolio</DialogTitle>
         </DialogHeader>
-        <form onSubmit={handleCreate} className="space-y-4">
+        <form onSubmit={handleEdit} className="space-y-4">
           <Input
-            placeholder="Nombre del portafolio"
+            placeholder="Nombre"
             value={name}
             onChange={e => setName(e.target.value)}
             required
           />
           <Input
-            placeholder="Descripción (opcional)"
+            placeholder="Descripción"
             value={description}
             onChange={e => setDescription(e.target.value)}
           />
           <DialogFooter>
             <Button variant="outline" onClick={onClose} disabled={loading}>Cancelar</Button>
-            <Button type="submit" disabled={loading || !name.trim()}>Crear</Button>
+            <Button type="submit" disabled={loading}>Guardar</Button>
           </DialogFooter>
         </form>
       </DialogContent>

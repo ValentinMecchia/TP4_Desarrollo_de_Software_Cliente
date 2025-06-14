@@ -39,8 +39,9 @@ export default function LoginPage() {
     <div className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-br from-background via-muted to-background p-4 animate-fade-in-up">
       <Card className="w-full max-w-md shadow-2xl border-border/50">
         <CardHeader className="text-center">
-          <div className="mx-auto mb-6">
-            <Logo size="lg" />
+          <div className="mx-auto mb-4 text-center flex flex-col items-center gap-2">
+            <Logo size="lg" showText={false} />
+            <p className="text-lg">SmartVest</p>
           </div>
           <CardTitle className="font-headline text-3xl">Bienvenido de Nuevo</CardTitle>
           <CardDescription>Inicia sesión para acceder a tu cuenta</CardDescription>

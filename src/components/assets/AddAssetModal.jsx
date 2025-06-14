@@ -13,33 +13,45 @@ import {
   CartesianGrid,
 } from "recharts";
 
-// Resultados de búsqueda con estilo moderno y soporte dark
+
+
 function SearchResults({ results, onSelect, selectedSymbol }) {
+  // Ya no solicita a la API para el precio, solo muestra el que viene en results
+  // Ordenar por score descendente si existe
+  const sortedResults = [...results].sort((a, b) => {
+    const scoreA = typeof a.score === "number" ? a.score : -Infinity;
+    const scoreB = typeof b.score === "number" ? b.score : -Infinity;
+    return scoreB - scoreA;
+  });
+
   return (
-    <ul className="max-h-64 overflow-y-auto divide-y divide-border rounded-lg shadow border border-border bg-muted/60 dark:bg-muted/80">
-      {results.map((item) => (
+    <ul className="max-h-64 overflow-y-auto divide-y divide-border rounded-lg border">
+      {sortedResults.map((item) => (
         <li
           key={item.symbol}
           className={`flex items-center justify-between px-4 py-2 cursor-pointer transition-colors
-            ${selectedSymbol === item.symbol
-              ? "bg-primary/10 dark:bg-primary/20 font-semibold"
-              : "hover:bg-muted/80 dark:hover:bg-muted/60"}
-          `}
+            ${
+              selectedSymbol === item.symbol
+                ? "bg-primary/10 dark:bg-primary/20 font-semibold"
+                : "hover:bg-muted/80 dark:hover:bg-muted/60"
+            }`}
           onClick={() => onSelect(item)}
         >
           <div className="flex flex-col">
-            <span className="font-bold text-primary text-base">{item.symbol}</span>
+            <span className="font-bold text-primary text-base">
+              {item.symbol}
+            </span>
             <span className="text-xs text-muted-foreground">
               {item.longName || item.shortname || "-"}
             </span>
           </div>
           <div className="flex flex-col items-end min-w-[80px]">
             {item.regularMarketPrice !== undefined ? (
-              <span className="font-semibold text-sm">
-                ${item.regularMarketPrice}
+              <span className="font-normal text-sm text-muted-foreground">
+                {item.regularMarketPrice !== null ? item.regularMarketPrice : ""}
               </span>
             ) : (
-              <span className="text-xs text-muted-foreground">-</span>
+              <span className="text-xs text-muted-foreground"></span>
             )}
             {item.regularMarketChange !== undefined &&
               item.regularMarketChangePercent !== undefined && (
@@ -67,6 +79,7 @@ function AssetDetailsCompact({ symbol, onBack, onAdd, canAdd }) {
   const [details, setDetails] = useState(null);
   const [prices, setPrices] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [amount, setAmount] = useState(1);
 
   useEffect(() => {
     if (!symbol) {
@@ -89,7 +102,6 @@ function AssetDetailsCompact({ symbol, onBack, onAdd, canAdd }) {
     ])
       .then(([summaryData, historyData]) => {
         setDetails(summaryData?.body || {});
-        // historyData.data.items is an array of price points
         const arr =
           Array.isArray(historyData?.data?.items) ||
           Array.isArray(historyData?.body)
@@ -109,10 +121,11 @@ function AssetDetailsCompact({ symbol, onBack, onAdd, canAdd }) {
   if (Array.isArray(prices)) {
     chartData = prices
       .map((item) => ({
-        date: item.date
-          ? new Date(item.date * 1000).toLocaleTimeString([], {
+        date: item.timestamp
+          ? new Date(item.timestamp).toLocaleTimeString([], {
               hour: "2-digit",
               minute: "2-digit",
+              hour12: false,
             })
           : item.formattedDate || "",
         price: item.close ?? item.price ?? item.last ?? null,
@@ -120,9 +133,19 @@ function AssetDetailsCompact({ symbol, onBack, onAdd, canAdd }) {
       .filter((d) => d.price !== null);
   }
 
+  // Calcula el precio unitario y variación
+  const pricePerUnit =
+    Number(info.primaryData?.lastSalePrice) ||
+    Number(info.regularMarketPrice) ||
+    0;
+  const variation =
+    Number(info.primaryData?.netChange) ||
+    Number(info.regularMarketChange) ||
+    0;
+
   return (
     <div className="w-full flex flex-col px-1 sm:px-2 py-2">
-      <div className="flex items-center gap-2 mb-2">
+      <div className="flex items-center gap-2 mb-4">
         <Button
           variant="ghost"
           size="icon"
@@ -131,12 +154,14 @@ function AssetDetailsCompact({ symbol, onBack, onAdd, canAdd }) {
         >
           <ArrowLeft className="text-primary" />
         </Button>
-        <span className="font-bold text-lg text-primary">
-          {info.symbol || "-"}
-        </span>
-        <span className="text-sm text-muted-foreground truncate ml-2">
-          {info.companyName || info.longName || "-"}
-        </span>
+        <div className="flex flex-col flex-1">
+          <span className="font-bold text-xl text-primary">
+            {info.symbol || ""}
+          </span>
+          <span className="text-sm text-muted-foreground truncate">
+            {info.companyName || info.longName || ""}
+          </span>
+        </div>
       </div>
       {loading ? (
         <div className="flex-1 flex items-center justify-center text-muted-foreground">
@@ -144,62 +169,153 @@ function AssetDetailsCompact({ symbol, onBack, onAdd, canAdd }) {
           Cargando detalles...
         </div>
       ) : details && info.symbol ? (
-        <div className="flex flex-col gap-2">
-          <div className="flex flex-wrap gap-4 items-center">
-            <div>
-              <span className="font-semibold text-xs">Precio: </span>
-              <span className="text-base font-bold text-primary">
+        <div className="flex flex-col gap-3">
+          <div className="grid grid-cols-3 gap-3">
+            <div className="bg-muted rounded-lg p-3 border border-border flex flex-col items-start">
+              <span className="uppercase text-[10px] text-muted-foreground tracking-widest">
+                Exchange
+              </span>
+              <span className="text-base font-semibold text-primary">
+                {info.exchange || "-"}
+              </span>
+            </div>
+            <div className="bg-muted rounded-lg p-3 border border-border flex flex-col items-start">
+              <span className="uppercase text-[10px] text-muted-foreground tracking-widest">
+                Precio actual
+              </span>
+              <span className="text-lg font-bold text-primary">
                 {info.primaryData?.lastSalePrice || "-"}
               </span>
             </div>
-            <div>
-              <span className="font-semibold text-xs">Var: </span>
+            <div className="bg-muted rounded-lg p-3 border border-border flex flex-col items-start">
+              <span className="uppercase text-[10px] text-muted-foreground tracking-widest">
+                Variación diaria
+              </span>
               <span
                 className={
                   (info.primaryData?.netChange?.startsWith("-")
                     ? "text-red-500 dark:text-red-400"
                     : "text-green-600 dark:text-green-400") +
-                  " font-semibold"
+                  " text-base font-semibold"
                 }
               >
-                {info.primaryData?.netChange || "-"}{" "}
+                {"$" + (info.primaryData?.netChange || "-")}{" "}
                 <span className="text-muted-foreground">
                   ({info.primaryData?.percentageChange || "-"})
                 </span>
               </span>
             </div>
-            <div>
-              <span className="font-semibold text-xs">Exchange: </span>
-              <span className="text-sm text-muted-foreground">
-                {info.exchange || "-"}
-              </span>
-            </div>
-          </div>
-          <div className="mt-2">
-            <span className="font-semibold text-xs block mb-1">Descripción:</span>
-            <span className="text-xs text-muted-foreground">
-              {info.companyName || info.longName || "-"}
-            </span>
           </div>
           {chartData.length > 1 && (
             <div className="mt-2">
-              <span className="font-semibold text-xs block mb-1">Gráfico (1d)</span>
-              <div className="w-full h-32 bg-muted/40 rounded-lg p-1">
+              <span className="font-semibold text-xs block mb-1">
+                Evolución diaria (últimas cotizaciones)
+              </span>
+              <div className="w-full h-40 bg-muted/40 rounded-lg p-2">
                 <ResponsiveContainer width="100%" height="100%">
-                  <LineChart data={chartData}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="date" minTickGap={16} fontSize={10} />
-                    <YAxis domain={["auto", "auto"]} fontSize={10} />
-                    <Tooltip />
+                  <LineChart
+                    data={chartData}
+                    margin={{ top: 10, right: 30, left: 10, bottom: 20 }}
+                  >
+                    <CartesianGrid strokeDasharray="3 3" stroke="#94a3b8" />
+                    <XAxis
+                      dataKey="date"
+                      minTickGap={16}
+                      fontSize={12}
+                      tick={{ fill: "#64748b" }}
+                      tickLine={false}
+                      axisLine={{ stroke: "#cbd5e1" }}
+                      label={{
+                        value: "Hora de cotización",
+                        position: "insideBottom",
+                        offset: -10,
+                        fill: "#64748b",
+                        fontSize: 12,
+                      }}
+                    />
+                    <YAxis
+                      domain={["auto", "auto"]}
+                      fontSize={12}
+                      tick={{ fill: "#64748b" }}
+                      tickLine={false}
+                      axisLine={{ stroke: "#cbd5e1" }}
+                      width={50}
+                      label={{
+                        value: "Precio ($)",
+                        angle: -90,
+                        position: "insideLeft",
+                        offset: 0,
+                        fill: "#64748b",
+                        fontSize: 12,
+                        style: { textAnchor: "middle" },
+                      }}
+                      labelProps={{
+                        style: { textAnchor: "middle" },
+                      }}
+                    />
+                    <Tooltip
+                      contentStyle={{
+                        background: "#1e293b",
+                        border: "none",
+                        borderRadius: "8px",
+                        color: "#fff",
+                        fontSize: "12px",
+                      }}
+                      labelStyle={{ color: "#fff" }}
+                    />
                     <Line
                       type="monotone"
                       dataKey="price"
                       stroke="#2563eb"
+                      strokeWidth={2.5}
                       dot={false}
-                      strokeWidth={2}
+                      activeDot={{ r: 5, fill: "#2563eb", stroke: "#fff", strokeWidth: 2 }}
                     />
                   </LineChart>
                 </ResponsiveContainer>
+              </div>
+            </div>
+          )}
+          {canAdd && info.symbol && (
+            <div className="flex flex-col sm:flex-row items-center gap-2 mt-4 justify-between">
+              <Input
+                type="number"
+                min={0.01}
+                step="any"
+                value={amount}
+                onChange={e => {
+                  // Permite borrar el input y escribir cualquier valor válido
+                  const val = e.target.value;
+                  if (val === "" || isNaN(Number(val))) {
+                    setAmount("");
+                  } else {
+                    setAmount(Number(val));
+                  }
+                }}
+                className="w-24"
+                placeholder="Cantidad"
+              />
+              <div className="flex gap-2 w-full sm:w-auto">
+                <Button variant="outline" onClick={onBack}>
+                  Cancelar
+                </Button>
+                <Button
+                  onClick={() => {
+                    // Solo permite cantidades mayores a 0 y no vacío
+                    if (amount > 0) {
+                      onAdd({
+                        ...info,
+                        amount,
+                        pricePerUnit: pricePerUnit.toFixed(2),
+                        variation: variation.toFixed(2),
+                        totalValue: (pricePerUnit * amount).toFixed(2),
+                      });
+                    }
+                  }}
+                  disabled={amount === "" || Number(amount) <= 0}
+                >
+                  <PlusCircle className="mr-2 h-5 w-5" /> Agregar
+                </Button>
               </div>
             </div>
           )}
@@ -209,26 +325,40 @@ function AssetDetailsCompact({ symbol, onBack, onAdd, canAdd }) {
           No se encontraron datos para este activo.
         </div>
       )}
-      {canAdd && info.symbol && (
-        <div className="flex justify-end gap-2 mt-4">
-          <Button variant="outline" onClick={onBack}>
-            Cancelar
-          </Button>
-          <Button onClick={() => onAdd(info)}>
-            <PlusCircle className="mr-2 h-5 w-5" /> Agregar
-          </Button>
-        </div>
-      )}
     </div>
   );
 }
 
-export default function AddAssetModal({ open, onClose, onSelect, portfolioId }) {
+export default function AddAssetModal({
+  open,
+  onClose,
+  onSelect,
+  portfolioId,
+}) {
   const [query, setQuery] = useState("");
   const [results, setResults] = useState([]);
   const [searching, setSearching] = useState(false);
   const [error, setError] = useState("");
   const [selected, setSelected] = useState(null);
+
+  // Guardar asset en la base de datos y notificar al padre para que recargue el portafolio
+  const handleAdd = async (asset) => {
+    if (!asset || !portfolioId) return;
+    try {
+      await fetch(`${API_BASE_URL}/api/portfolios/${portfolioId}/assets`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(asset),
+      });
+      if (onSelect) onSelect(asset); // Notifica al padre para que recargue el portafolio
+    } catch (err) {
+      // Manejo simple de error
+    }
+    setSelected(null);
+    setQuery("");
+    setResults([]);
+    onClose();
+  };
 
   const handleSearch = async (e) => {
     e.preventDefault();
@@ -271,15 +401,6 @@ export default function AddAssetModal({ open, onClose, onSelect, portfolioId }) 
     } finally {
       setSearching(false);
     }
-  };
-
-  const handleAdd = async (asset) => {
-    if (!asset || !portfolioId) return;
-    await onSelect(asset);
-    setSelected(null);
-    setQuery("");
-    setResults([]);
-    onClose();
   };
 
   const handleBackToSearch = () => setSelected(null);
@@ -325,12 +446,6 @@ export default function AddAssetModal({ open, onClose, onSelect, portfolioId }) 
                 onSelect={setSelected}
                 selectedSymbol={selected?.symbol}
               />
-            )}
-
-            {!searching && !error && query.trim() && results.length === 0 && (
-              <div className="text-muted-foreground text-center py-4">
-                No hay resultados.
-              </div>
             )}
 
             <div className="flex justify-end gap-2 mt-4">
