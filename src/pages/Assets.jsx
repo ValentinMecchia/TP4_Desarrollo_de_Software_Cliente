@@ -1,15 +1,15 @@
 import React, { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { ArrowUpRight, ArrowDownRight, LineChart, WalletCards, AreaChart, Sparkles, PlusCircle, Search } from "lucide-react";
-import { ChartContainer, ChartTooltip, ChartTooltipContent, ChartLegend, ChartLegendContent } from "@/components/ui/chart";
-import { LineChart as RechartsLineChart, Line, Tooltip, ResponsiveContainer, CartesianGrid, XAxis, YAxis } from "recharts";
-import { Bar, BarChart } from "recharts";
+import { ArrowUpRight, ArrowDownRight, LineChart, WalletCards, AreaChart, Sparkles, PlusCircle, Search, Star, StarOff, Pencil, Save, X } from "lucide-react";
+import { ResponsiveContainer, LineChart as RechartsLineChart, Line, Tooltip, CartesianGrid, XAxis, YAxis } from "recharts";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { API_BASE_URL } from "@/constants/api";
 import AddAssetModal from "@/components/assets/AddAssetModal";
 import { motion, AnimatePresence } from "framer-motion";
+
+const cardHoverEffect = "transition-all duration-300 ease-in-out hover:shadow-2xl hover:-translate-y-1 hover:shadow-primary/20 border border-border hover:border-primary/30";
 
 // Vista compacta de detalles de asset (similar a AssetDetailsCompact del modal)
 function AssetDetailsCompact({ symbol, onBack }) {
@@ -83,499 +83,497 @@ function AssetDetailsCompact({ symbol, onBack }) {
     );
 }
 
-// Componente reutilizable para mostrar un asset y agregarlo a portafolio(s)
-function AssetRow({ asset, onAdd }) {
-    return (
-        <TableRow>
-            <TableCell>{asset.name}</TableCell>
-            <TableCell>{asset.symbol}</TableCell>
-            <TableCell className="text-right">${asset.price?.toLocaleString?.() ?? asset.price}</TableCell>
-            <TableCell className={`text-right ${asset.change >= 0 ? 'text-positive' : 'text-negative'}`}>
-                <span className="inline-flex items-center">
-                    {asset.change >= 0
-                        ? <ArrowUpRight className="h-4 w-4 mr-1" />
-                        : <ArrowDownRight className="h-4 w-4 mr-1" />}
-                    {asset.changePercent?.toFixed?.(2) ?? asset.changePercent}%
-                </span>
-            </TableCell>
-            <TableCell className="text-right">{asset.marketCap}</TableCell>
-            <TableCell className="text-right">
-                <Button size="icon" variant="outline" onClick={() => onAdd(asset)} aria-label="Agregar a portafolio">
-                    <PlusCircle className="h-5 w-5" />
-                </Button>
-            </TableCell>
-        </TableRow>
-    );
+// Favoritos de acciones
+function FavoriteAssetsSection({ favorites, onRemove, onEditComment, editingId, commentDraft, setCommentDraft, setEditingId, handleSaveComment }) {
+  return (
+    <Card className={`mb-8 w-full ${cardHoverEffect}`}>
+      <CardHeader>
+        <CardTitle className="font-headline text-2xl flex items-center gap-2">
+          <Star className="h-7 w-7 text-yellow-400" />
+          Acciones Favoritas
+        </CardTitle>
+        <CardDescription>
+          Guarda tus acciones favoritas y deja un comentario personal.
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        {favorites.length === 0 ? (
+          <div className="text-muted-foreground text-sm mb-6">
+            No tienes acciones favoritas aún.
+          </div>
+        ) : (
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Nombre</TableHead>
+                <TableHead>Símbolo</TableHead>
+                <TableHead>Comentario</TableHead>
+                <TableHead className="text-right">Acciones</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {favorites.map((fav, idx) => (
+                <TableRow key={fav.id || fav.symbol || idx}>
+                  <TableCell>{fav.name || fav.symbol}</TableCell>
+                  <TableCell>{fav.symbol || fav.url}</TableCell>
+                  <TableCell>
+                    {editingId === fav.id ? (
+                      <div className="flex flex-col gap-2">
+                        <Input
+                          value={commentDraft}
+                          onChange={e => setCommentDraft(e.target.value)}
+                          className="w-full"
+                        />
+                        <div className="flex gap-2">
+                          <Button size="sm" onClick={() => handleSaveComment(fav)}>
+                            <Save className="h-4 w-4 mr-1" /> Guardar
+                          </Button>
+                          <Button size="sm" variant="outline" onClick={() => setEditingId(null)}>
+                            Cancelar
+                          </Button>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="flex items-center gap-2">
+                        <span>{fav.comment || fav.content || <span className="italic text-muted-foreground">Sin comentario</span>}</span>
+                        <Button size="icon" variant="ghost" onClick={() => onEditComment(fav)}>
+                          <Pencil className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    )}
+                  </TableCell>
+                  <TableCell className="text-right">
+                    <Button
+                      size="icon"
+                      variant="destructive"
+                      onClick={() => onRemove(fav)}
+                      aria-label="Eliminar favorito"
+                    >
+                      <StarOff className="h-5 w-5 text-yellow-400" />
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        )}
+      </CardContent>
+    </Card>
+  );
 }
 
-
-
-
-const chartConfig = {
-    TII: { label: "TII", color: "hsl(var(--chart-1))" },
-    EES: { label: "EES", color: "hsl(var(--chart-2))" },
-    GHC: { label: "GHC", color: "hsl(var(--chart-3))" },
-};
-
-const cardHoverEffect = "transition-all duration-300 ease-in-out hover:shadow-2xl hover:-translate-y-1 hover:shadow-primary/20 border border-border hover:border-primary/30";
-
 export default function AssetsPage() {
-    const [search, setSearch] = useState("");
-    const [searchResults, setSearchResults] = useState([]);
-    const [searching, setSearching] = useState(false);
-    const [error, setError] = useState("");
-    const [assets, setAssets] = useState([]);
-    const [loadingAssets, setLoadingAssets] = useState(true);
-    const [errorAssets, setErrorAssets] = useState("");
-    const [selectedAssetDetail, setSelectedAssetDetail] = useState(null);
-    const [showAddModal, setShowAddModal] = useState(false);
-    const [selectedSymbol, setSelectedSymbol] = useState(null);
-    const [trendingAssets, setTrendingAssets] = useState([]);
-    const [weeklyChartData, setWeeklyChartData] = useState([]);
+  const [search, setSearch] = useState("");
+  const [searchResults, setSearchResults] = useState([]);
+  const [searching, setSearching] = useState(false);
+  const [error, setError] = useState("");
+  const [favorites, setFavorites] = useState([]);
+  const [editingId, setEditingId] = useState(null);
+  const [commentDraft, setCommentDraft] = useState("");
+  const [selectedSymbol, setSelectedSymbol] = useState(null);
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [trendingAssets, setTrendingAssets] = useState([]);
+  const [trendingError, setTrendingError] = useState("");
 
-    useEffect(() => {
-        fetch(`${API_BASE_URL}/api/assets`)
-            .then(res => { if (!res.ok) throw new Error("No se pudieron cargar los assets"); return res.json(); })
-            .then(data => { setAssets(data); setLoadingAssets(false); })
-            .catch(err => { setErrorAssets(err.message); setLoadingAssets(false); });
-    }, []);
+  // Cargar favoritos desde el backend
+  useEffect(() => {
+    async function fetchFavorites() {
+      try {
+        const res = await fetch(`${API_BASE_URL}/api/assets/favorites`, { credentials: "include" });
+        if (res.ok) {
+          const data = await res.json();
+          setFavorites(Array.isArray(data) ? data : []);
+        } else {
+          setFavorites([]);
+        }
+      } catch {
+        setFavorites([]);
+      }
+    }
+    fetchFavorites();
+  }, []);
 
-    useEffect(() => {
-        // Cargar tendencias: Apple, Tesla, Microsoft
-        const symbols = ["AAPL", "TSLA", "MSFT"];
-        Promise.all(
-            symbols.map(async (symbol) => {
-                try {
-                    const res = await fetch(`${API_BASE_URL}/api/yahoo/market/quotes/realtime/${symbol}`);
-                    const data = await res.json();
-                    const info = data?.body || {};
-                    let price = info.primaryData?.lastSalePrice;
-                    if (typeof price === "string") price = Number(price.replace(/[$,]/g, ""));
-                    if ((!price || isNaN(price)) && info.regularMarketPrice) price = Number(info.regularMarketPrice);
+  // Guardar favorito en el backend
+  const addFavorite = async (asset) => {
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/assets/favorites`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({
+          symbol: asset.symbol,
+          name: asset.name || asset.shortname || asset.longName || "",
+        }),
+      });
+      if (res.ok) {
+        const saved = await res.json();
+        setFavorites((prev) => [...prev, saved]);
+      }
+    } catch {
+      // ignore
+    }
+  };
 
-                    let change = info.primaryData?.netChange;
-                    if (typeof change === "string") change = Number(change.replace(/[,]/g, ""));
-                    if ((!change || isNaN(change)) && info.regularMarketChange) change = Number(info.regularMarketChange);
+  // Eliminar favorito del backend
+  const removeFavorite = async (fav) => {
+    try {
+      await fetch(`${API_BASE_URL}/api/assets/favorites/${fav.id}`, {
+        method: "DELETE",
+        credentials: "include",
+      });
+      setFavorites((prev) => prev.filter((f) => f.id !== fav.id));
+    } catch {
+      // ignore
+    }
+  };
 
-                    let changePercent = info.primaryData?.percentageChange;
-                    if (typeof changePercent === "string") changePercent = Number(changePercent.replace(/[%]/g, ""));
-                    if ((!changePercent || isNaN(changePercent)) && info.regularMarketChangePercent) changePercent = Number(info.regularMarketChangePercent);
+  // Editar comentario de favorito
+  const handleEditComment = (fav) => {
+    setEditingId(fav.id);
+    setCommentDraft(fav.comment || fav.content || "");
+  };
 
-                    return {
-                        symbol,
-                        name: info.companyName || symbol,
-                        price: !isNaN(price) ? price : undefined,
-                        change: !isNaN(change) ? change : undefined,
-                        changePercent: !isNaN(changePercent) ? changePercent : undefined,
-                    };
-                } catch {
-                    return { symbol, name: symbol };
-                }
-            })
-        ).then(setTrendingAssets);
+  const handleSaveComment = async (fav) => {
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/assets/favorites/${fav.id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ comment: commentDraft }),
+      });
+      if (res.ok) {
+        setFavorites((prev) =>
+          prev.map((f) =>
+            f.id === fav.id ? { ...f, comment: commentDraft } : f
+          )
+        );
+      }
+    } catch {
+      // ignore
+    }
+    setEditingId(null);
+  };
 
-        // Obtener precios históricos de los últimos 7 días para AAPL, TSLA, MSFT
-        (async () => {
-            const dias = ["Dom", "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb"];
-            const allSeries = await Promise.all(
-                symbols.map(async (symbol) => {
-                    try {
-                        const res = await fetch(`${API_BASE_URL}/api/yahoo/history/${symbol}?range=7d&interval=1d`);
-                        const data = await res.json();
-                        // Yahoo suele devolver un array de precios en data.body o data.data/items
-                        const arr =
-                            Array.isArray(data?.data?.items)
-                                ? data.data.items
-                                : Array.isArray(data?.body)
-                                    ? data.body
-                                    : [];
-                        // Solo días con precio válido
-                        return arr
-                            .filter(item => item.close !== undefined && item.close !== null)
-                            .map((item) => ({
-                                date: item.date
-                                    ? dias[new Date(item.date * 1000).getDay()]
-                                    : item.formattedDate || "",
-                                [symbol]: item.close,
-                            }));
-                    } catch {
-                        return [];
+  // Buscar assets usando la API de Yahoo de tu backend
+  const handleSearch = async (e) => {
+    e.preventDefault();
+    setSearching(true);
+    setError("");
+    setSearchResults([]);
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/yahoo/search/${encodeURIComponent(search.trim())}`);
+      const data = await res.json();
+
+      const arr = Array.isArray(data?.body)
+        ? data.body
+        : Array.isArray(data?.data?.items)
+          ? data.data.items
+          : Array.isArray(data?.items)
+            ? data.items
+            : [];
+
+      // Enriquecer cada asset con cotización usando el endpoint correcto
+      const enrichedResults = await Promise.all(
+        arr.map(async (item) => {
+          const symbol = item.symbol || item.ticker || item.code || "";
+          let enriched = {
+            symbol,
+            longName: item.longname || item.name || item.shortname || "",
+            shortname: item.shortname || item.name || item.longname || "",
+          };
+          try {
+            const quoteRes = await fetch(`${API_BASE_URL}/api/yahoo/market/quotes/realtime/${encodeURIComponent(symbol)}`);
+            if (!quoteRes.ok) return enriched;
+            const quoteData = await quoteRes.json();
+            const info = quoteData?.body || {};
+            let price = info.primaryData?.lastSalePrice;
+            if (typeof price === "string") price = Number(price.replace(/[$,]/g, ""));
+            if ((!price || isNaN(price)) && info.regularMarketPrice) price = Number(info.regularMarketPrice);
+
+            let change = info.primaryData?.netChange;
+            if (typeof change === "string") change = Number(change.replace(/[,]/g, ""));
+            if ((!change || isNaN(change)) && info.regularMarketChange) change = Number(info.regularMarketChange);
+
+            let changePercent = info.primaryData?.percentageChange;
+            if (typeof changePercent === "string") changePercent = Number(changePercent.replace(/[%]/g, ""));
+            if ((!changePercent || isNaN(changePercent)) && info.regularMarketChangePercent) changePercent = Number(info.regularMarketChangePercent);
+
+            return {
+              ...enriched,
+              regularMarketPrice: !isNaN(price) ? price : undefined,
+              regularMarketChange: !isNaN(change) ? change : undefined,
+              regularMarketChangePercent: !isNaN(changePercent) ? changePercent : undefined,
+              exchange: info.exchange || item.exchDisp || item.exchange,
+            };
+          } catch {
+            return enriched;
+          }
+        })
+      );
+      setSearchResults(enrichedResults);
+    } catch (err) {
+      setError("No se pudieron obtener resultados.");
+    } finally {
+      setSearching(false);
+    }
+  };
+
+  // Trending assets (máximo 5 para evitar rate limit)
+  useEffect(() => {
+    // Limita a 5 símbolos populares
+    const symbols = ["AAPL", "TSLA", "MSFT", "GOOGL", "AMZN"];
+    Promise.all(
+      symbols.map(async (symbol) => {
+        try {
+          const res = await fetch(`${API_BASE_URL}/api/yahoo/market/quotes/realtime/${symbol}`);
+          if (res.status === 429) {
+            setTrendingError("Límite de consultas alcanzado. Intenta más tarde.");
+            return null;
+          }
+          const data = await res.json();
+          const info = data?.body || {};
+          let price = info.primaryData?.lastSalePrice;
+          if (typeof price === "string") price = Number(price.replace(/[$,]/g, ""));
+          if ((!price || isNaN(price)) && info.regularMarketPrice) price = Number(info.regularMarketPrice);
+
+          let change = info.primaryData?.netChange;
+          if (typeof change === "string") change = Number(change.replace(/[,]/g, ""));
+          if ((!change || isNaN(change)) && info.regularMarketChange) change = Number(info.regularMarketChange);
+
+          let changePercent = info.primaryData?.percentageChange;
+          if (typeof changePercent === "string") changePercent = Number(changePercent.replace(/[%]/g, ""));
+          if ((!changePercent || isNaN(changePercent)) && info.regularMarketChangePercent) changePercent = Number(info.regularMarketChangePercent);
+
+          return {
+            symbol,
+            name: info.companyName || symbol,
+            price: !isNaN(price) ? price : undefined,
+            change: !isNaN(change) ? change : undefined,
+            changePercent: !isNaN(changePercent) ? changePercent : undefined,
+          };
+        } catch {
+          setTrendingError("No se pudieron cargar las acciones en tendencia.");
+          return null;
+        }
+      })
+    ).then(results => {
+      setTrendingAssets(results.filter(Boolean));
+    });
+  }, []);
+
+  // Favorito: ¿es favorito?
+  const isFavorite = (asset) => {
+    return favorites.some(f => f.symbol === asset.symbol);
+  };
+
+  // Guardar como favorito desde búsqueda o trending
+  const handleToggleFavorite = (asset) => {
+    if (isFavorite(asset)) {
+      const fav = favorites.find(f => f.symbol === asset.symbol);
+      if (fav) removeFavorite(fav);
+    } else {
+      addFavorite(asset);
+    }
+  };
+
+  return (
+    <motion.div
+      className="container mx-auto py-8 px-4 sm:px-6 lg:px-8"
+      initial={{ opacity: 0, y: 40, scale: 0.97 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      exit={{ opacity: 0, y: -40, scale: 0.97 }}
+      transition={{ duration: 0.5, type: "spring" }}
+    >
+      {/* Favoritos */}
+      <FavoriteAssetsSection
+        favorites={favorites}
+        onRemove={removeFavorite}
+        onEditComment={handleEditComment}
+        editingId={editingId}
+        commentDraft={commentDraft}
+        setCommentDraft={setCommentDraft}
+        setEditingId={setEditingId}
+        handleSaveComment={handleSaveComment}
+      />
+
+      {/* Barra de búsqueda */}
+      <form onSubmit={handleSearch} className="flex w-full gap-2 mb-8">
+        <Input
+          placeholder="Buscar asset por nombre o símbolo (ej: AAPL, Tesla, etc)"
+          value={search}
+          onChange={e => setSearch(e.target.value)}
+          className="flex-1"
+        />
+        <Button type="submit" disabled={!search.trim() || searching}>
+          <Search className="h-4 w-4" />
+          <span className="ml-2">Buscar</span>
+        </Button>
+      </form>
+
+      {/* Indicador de búsqueda */}
+      {searching && (
+        <div className="flex items-center gap-2 mb-4 text-primary">
+          <span className="animate-spin h-5 w-5 border-2 border-primary border-t-transparent rounded-full"></span>
+          Buscando...
+        </div>
+      )}
+
+      {/* Detalle compacto si hay símbolo seleccionado */}
+      {selectedSymbol && (
+        <Card className="mb-8 w-full">
+          <CardHeader>
+            <CardTitle>Detalles del Asset</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <AssetDetailsCompact
+              symbol={selectedSymbol}
+              onBack={() => setSelectedSymbol(null)}
+            />
+          </CardContent>
+        </Card>
+      )}
+
+      <AddAssetModal
+        open={showAddModal}
+        onClose={() => setShowAddModal(false)}
+        onSelect={() => setShowAddModal(false)}
+        portfolioId={null}
+      />
+
+      {/* Resultados de búsqueda */}
+      {searchResults.length > 0 && !selectedSymbol && (
+        <Card className={`mb-8 w-full ${cardHoverEffect}`}>
+          <CardHeader>
+            <CardTitle className="font-headline text-2xl flex items-center gap-2">
+              <Sparkles className="h-7 w-7 text-primary/90" />
+              Resultados de búsqueda
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Nombre</TableHead>
+                  <TableHead>Símbolo</TableHead>
+                  <TableHead className="text-right">Precio</TableHead>
+                  <TableHead className="text-right">Var</TableHead>
+                  <TableHead className="text-right">Exchange</TableHead>
+                  <TableHead className="text-right">Favorito</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {searchResults.map((asset) => (
+                  <TableRow key={asset.symbol}>
+                    <TableCell>{asset.shortname || asset.longName || asset.symbol}</TableCell>
+                    <TableCell>{asset.symbol}</TableCell>
+                    <TableCell className="text-right">
+                      {asset.regularMarketPrice !== undefined && asset.regularMarketPrice !== null && !isNaN(asset.regularMarketPrice)
+                        ? `$${Number(asset.regularMarketPrice).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
+                        : "-"
+                      }
+                    </TableCell>
+                    <TableCell className={`text-right ${asset.regularMarketChange !== undefined && asset.regularMarketChange !== null && !isNaN(asset.regularMarketChange) && asset.regularMarketChange >= 0
+                      ? "text-positive"
+                      : "text-negative"
+                    }`}>
+                      {asset.regularMarketChange !== undefined && asset.regularMarketChange !== null && !isNaN(asset.regularMarketChange)
+                        ? `${Number(asset.regularMarketChange).toFixed(2)} (${asset.regularMarketChangePercent !== undefined && asset.regularMarketChangePercent !== null && !isNaN(asset.regularMarketChangePercent)
+                          ? Number(asset.regularMarketChangePercent).toFixed(2)
+                          : "-"
+                        }%)`
+                        : "-"}
+                    </TableCell>
+                    <TableCell className="text-right">{asset.exchange || "-"}</TableCell>
+                    <TableCell className="text-right">
+                      <Button
+                        size="icon"
+                        variant="ghost"
+                        onClick={() => handleToggleFavorite(asset)}
+                        aria-label={isFavorite(asset) ? "Quitar de favoritos" : "Agregar a favoritos"}
+                      >
+                        {isFavorite(asset) ? (
+                          <StarOff className="h-5 w-5 text-yellow-400" />
+                        ) : (
+                          <Star className="h-5 w-5 text-yellow-400" />
+                        )}
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Acciones en tendencia */}
+      <Card className={`mb-8 w-full ${cardHoverEffect}`}>
+        <CardHeader className="flex flex-row items-center justify-between space-x-4 pb-4">
+          <div>
+            <CardTitle className="font-headline text-2xl flex items-center gap-2">
+              <WalletCards className="h-7 w-7 text-primary/90" />
+              Acciones en tendencia
+            </CardTitle>
+            <CardDescription>
+              Sigue en tiempo real las acciones que son tendencias en el mercado
+            </CardDescription>
+          </div>
+        </CardHeader>
+        <CardContent>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Asset Name</TableHead>
+                <TableHead>Symbol</TableHead>
+                <TableHead className="text-right">Price</TableHead>
+                <TableHead className="text-right">Change (24h)</TableHead>
+                <TableHead className="text-right">Favorito</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {trendingAssets.map(asset => (
+                <TableRow key={asset.symbol}>
+                  <TableCell>{asset.name}</TableCell>
+                  <TableCell>{asset.symbol}</TableCell>
+                  <TableCell className="text-right">
+                    {asset.price !== undefined && asset.price !== null && !isNaN(asset.price)
+                      ? `$${Number(asset.price).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
+                      : "-"
                     }
-                })
-            );
-            // Combinar por fecha
-            const merged = {};
-            allSeries.forEach((series) => {
-                series.forEach((point) => {
-                    if (!point.date) return;
-                    if (!merged[point.date]) merged[point.date] = { date: point.date };
-                    Object.entries(point).forEach(([k, v]) => {
-                        if (k !== "date") merged[point.date][k] = v;
-                    });
-                });
-            });
-            // Solo los días de lunes a viernes y ordenados
-            const diasOrden = ["Lun", "Mar", "Mié", "Jue", "Vie"];
-            const mergedArr = diasOrden
-                .map((d) => merged[d])
-                .filter(row =>
-                    row &&
-                    (row.AAPL !== undefined || row.TSLA !== undefined || row.MSFT !== undefined)
-                );
-            setWeeklyChartData(mergedArr);
-        })();
-    }, []);
-
-    useEffect(() => {
-        if (!search.trim()) {
-            setSearchResults([]);
-            setError("");
-        }
-    }, [search]);
-
-
-
-    // Buscar assets usando la API de Yahoo de tu backend
-    const handleSearch = async (e) => {
-        e.preventDefault();
-        setSearching(true);
-        setError("");
-        setSearchResults([]);
-        try {
-            const res = await fetch(`${API_BASE_URL}/api/yahoo/search/${encodeURIComponent(search.trim())}`);
-            const data = await res.json();
-
-            const arr = Array.isArray(data?.body)
-                ? data.body
-                : Array.isArray(data?.data?.items)
-                    ? data.data.items
-                    : Array.isArray(data?.items)
-                        ? data.items
-                        : [];
-
-            // Enriquecer cada asset con cotización usando el endpoint correcto
-            const enrichedResults = await Promise.all(
-                arr.map(async (item) => {
-                    const symbol = item.symbol || item.ticker || item.code || "";
-                    let enriched = {
-                        symbol,
-                        longName: item.longname || item.name || item.shortname || "",
-                        shortname: item.shortname || item.name || item.longname || "",
-                    };
-                    try {
-                        // Usa el endpoint de AddAssetModal y chequea la estructura real
-                        const quoteRes = await fetch(`${API_BASE_URL}/api/yahoo/market/quotes/realtime/${encodeURIComponent(symbol)}`);
-                        if (!quoteRes.ok) return enriched;
-                        const quoteData = await quoteRes.json();
-                        const info = quoteData?.body || {};
-                        // Si no hay primaryData, intenta con regularMarketPrice
-                        let price = info.primaryData?.lastSalePrice;
-                        if (typeof price === "string") price = Number(price.replace(/[$,]/g, ""));
-                        if ((!price || isNaN(price)) && info.regularMarketPrice) price = Number(info.regularMarketPrice);
-
-                        let change = info.primaryData?.netChange;
-                        if (typeof change === "string") change = Number(change.replace(/[,]/g, ""));
-                        if ((!change || isNaN(change)) && info.regularMarketChange) change = Number(info.regularMarketChange);
-
-                        let changePercent = info.primaryData?.percentageChange;
-                        if (typeof changePercent === "string") changePercent = Number(changePercent.replace(/[%]/g, ""));
-                        if ((!changePercent || isNaN(changePercent)) && info.regularMarketChangePercent) changePercent = Number(info.regularMarketChangePercent);
-
-                        return {
-                            ...enriched,
-                            regularMarketPrice: !isNaN(price) ? price : undefined,
-                            regularMarketChange: !isNaN(change) ? change : undefined,
-                            regularMarketChangePercent: !isNaN(changePercent) ? changePercent : undefined,
-                            exchange: info.exchange || item.exchDisp || item.exchange,
-                        };
-                    } catch {
-                        return enriched;
-                    }
-                })
-            );
-            setSearchResults(enrichedResults);
-        } catch (err) {
-            setError("No se pudieron obtener resultados.");
-        } finally {
-            setSearching(false);
-        }
-    };
-
-    const fetchAssetDetail = async (symbol) => {
-        try {
-            const res = await fetch(`${API_BASE_URL}/api/yahoo/quote/${symbol}`);
-            if (!res.ok) throw new Error("No se pudo obtener detalle del asset");
-            const data = await res.json();
-            setSelectedAssetDetail(data);
-        } catch (err) {
-            console.error(err);
-            alert("❌ Error al obtener los datos del asset.");
-        }
-    };
-
-
-    // Cuando se hace click en agregar asset, aquí puedes abrir un modal para seleccionar portafolio/cantidad/precio
-    const handleAddAssetToPortfolio = async (asset) => {
-        // 1️⃣ Abrir un modal para seleccionar portafolio, cantidad y precio
-        const portfolioId = prompt("✏️ Ingresa el ID de tu portafolio:");
-        if (!portfolioId) return alert("Operación cancelada.");
-
-        const qtyStr = prompt(`¿Cuántas unidades de ${asset.symbol} querés agregar?`);
-        const quantity = parseFloat(qtyStr);
-        if (isNaN(quantity) || quantity <= 0) {
-            return alert("Cantidad inválida.");
-        }
-
-        const priceStr = prompt(`¿A qué precio compraste ${asset.symbol}?`, asset.regularMarketPrice ?? "");
-        const price = parseFloat(priceStr);
-        if (isNaN(price) || price <= 0) {
-            return alert("Precio inválido.");
-        }
-
-        // 2️⃣ Enviar la petición al backend
-        try {
-            const res = await fetch(
-                `${API_BASE_URL}/api/portfolios/${portfolioId}/assets`,
-                {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({
-                        symbol: asset.symbol,
-                        name: asset.shortname || asset.longName || asset.symbol,
-                        price,
-                        quantity
-                    })
-                }
-            );
-            if (!res.ok) throw new Error(`HTTP ${res.status}`);
-            const saved = await res.json();
-            alert(`✅ Agregaste ${saved.symbol} x${saved.quantity} al portafolio ${portfolioId}`);
-        } catch (err) {
-            console.error(err);
-            alert("❌ Error al agregar el asset a tu portafolio.");
-        }
-    };
-    if (loadingAssets) return (
-      <AnimatePresence>
-        <motion.div
-          className="p-4"
-          initial={{ opacity: 0, y: 40, scale: 0.97 }}
-          animate={{ opacity: 1, y: 0, scale: 1 }}
-          exit={{ opacity: 0, y: -40, scale: 0.97 }}
-          transition={{ duration: 0.5, type: "spring" }}
-        >
-          Cargando assets...
-        </motion.div>
-      </AnimatePresence>
-    );
-    if (errorAssets) return (
-      <AnimatePresence>
-        <motion.div
-          className="p-4 text-red-500"
-          initial={{ opacity: 0, y: 40, scale: 0.97 }}
-          animate={{ opacity: 1, y: 0, scale: 1 }}
-          exit={{ opacity: 0, y: -40, scale: 0.97 }}
-          transition={{ duration: 0.5, type: "spring" }}
-        >
-          Error: {errorAssets}
-        </motion.div>
-      </AnimatePresence>
-    );
-
-    return (
-        <motion.div
-          className="container mx-auto py-8 px-4 sm:px-6 lg:px-8"
-          initial={{ opacity: 0, y: 40, scale: 0.97 }}
-          animate={{ opacity: 1, y: 0, scale: 1 }}
-          exit={{ opacity: 0, y: -40, scale: 0.97 }}
-          transition={{ duration: 0.5, type: "spring" }}
-        >
-          {/* Barra de búsqueda de ancho completo */}
-          <form onSubmit={handleSearch} className="flex w-full gap-2 mb-8">
-              <Input
-                  placeholder="Buscar asset por nombre o símbolo (ej: AAPL, Tesla, etc)"
-                  value={search}
-                  onChange={e => setSearch(e.target.value)}
-                  className="flex-1"
-              />
-              <Button type="submit" disabled={!search.trim()}>
-                  <Search className="h-4 w-4" />
-                  <span className="ml-2">Buscar</span>
-              </Button>
-          </form>
-
-          {/* Detalle compacto si hay símbolo seleccionado */}
-          {selectedSymbol && (
-              <Card className="mb-8 w-full">
-                  <CardHeader>
-                      <CardTitle>Detalles del Asset</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                      <AssetDetailsCompact
-                          symbol={selectedSymbol}
-                          onBack={() => setSelectedSymbol(null)}
-                      />
-                  </CardContent>
-              </Card>
-          )}
-
-          <AddAssetModal
-              open={showAddModal}
-              onClose={() => setShowAddModal(false)}
-              onSelect={() => setShowAddModal(false)}
-              portfolioId={null} // No necesitas portfolioId aquí
-          />
-
-          {searchResults.length > 0 && !selectedSymbol && (
-              <Card className={`mb-8 w-full ${cardHoverEffect}`}>
-                  <CardHeader>
-                      <CardTitle className="font-headline text-2xl flex items-center gap-2">
-                          <Sparkles className="h-7 w-7 text-primary/90" />
-                          Resultados de búsqueda
-                      </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                      <Table>
-                          <TableHeader>
-                              <TableRow>
-                                  <TableHead>Nombre</TableHead>
-                                  <TableHead>Símbolo</TableHead>
-                                  <TableHead className="text-right">Precio</TableHead>
-                                  <TableHead className="text-right">Var</TableHead>
-                                  <TableHead className="text-right">Exchange</TableHead>
-                                  <TableHead className="text-right">Agregar</TableHead>
-                              </TableRow>
-                          </TableHeader>
-                          <TableBody>
-                              {searchResults.map((asset) => (
-                                  <TableRow key={asset.symbol}>
-                                      <TableCell>{asset.shortname || asset.longName || asset.symbol}</TableCell>
-                                      <TableCell>{asset.symbol}</TableCell>
-                                      <TableCell className="text-right">
-                                          {asset.regularMarketPrice !== undefined && asset.regularMarketPrice !== null && !isNaN(asset.regularMarketPrice)
-                                              ? `$${Number(asset.regularMarketPrice).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
-                                              : "-"
-                                          }
-                                      </TableCell>
-                                      <TableCell className={`text-right ${asset.regularMarketChange !== undefined && asset.regularMarketChange !== null && !isNaN(asset.regularMarketChange) && asset.regularMarketChange >= 0
-                                              ? "text-positive"
-                                              : "text-negative"
-                                          }`}>
-                                          {asset.regularMarketChange !== undefined && asset.regularMarketChange !== null && !isNaN(asset.regularMarketChange)
-                                              ? `${Number(asset.regularMarketChange).toFixed(2)} (${asset.regularMarketChangePercent !== undefined && asset.regularMarketChangePercent !== null && !isNaN(asset.regularMarketChangePercent)
-                                                  ? Number(asset.regularMarketChangePercent).toFixed(2)
-                                                  : "-"
-                                              }%)`
-                                              : "-"}
-                                      </TableCell>
-                                      <TableCell className="text-right">{asset.exchange || "-"}</TableCell>
-                                      <TableCell className="text-right">
-                                          <Button
-                                              size="icon"
-                                              variant="outline"
-                                              onClick={() => handleAddAssetToPortfolio(asset)}
-                                              aria-label="Agregar a portafolio"
-                                          >
-                                              <PlusCircle className="h-5 w-5" />
-                                          </Button>
-                                      </TableCell>
-                                  </TableRow>
-                              ))}
-                          </TableBody>
-                      </Table>
-                  </CardContent>
-              </Card>
-          )}
-
-
-
-          {/* Asset Overview local (mock) solo si no hay búsqueda activa */}
-          {searchResults.length === 0 && (
-              <>
-                  <Card className={`mb-8 w-full ${cardHoverEffect}`}>
-                      <CardHeader className="flex flex-row items-center justify-between space-x-4 pb-4">
-                          <div>
-                              <CardTitle className="font-headline text-2xl flex items-center gap-2">
-                                  <WalletCards className="h-7 w-7 text-primary/90" />
-                                  Acciones en tendencia
-                              </CardTitle>
-                              <CardDescription>
-                                  Sigue en tiempo real las acciones que son tendencias en el mercado
-                              </CardDescription>
-                          </div>
-                      </CardHeader>
-                      <CardContent>
-                          <Table>
-                              <TableHeader>
-                                  <TableRow>
-                                      <TableHead>Asset Name</TableHead>
-                                      <TableHead>Symbol</TableHead>
-                                      <TableHead className="text-right">Price</TableHead>
-                                      <TableHead className="text-right">Change (24h)</TableHead>
-                                      {/* <TableHead className="text-right">Market Cap</TableHead> */}
-                                      <TableHead className="text-right">Agregar</TableHead>
-                                  </TableRow>
-                              </TableHeader>
-                              <TableBody>
-                                  {trendingAssets.map(asset => (
-                                      <TableRow key={asset.symbol}>
-                                          <TableCell>{asset.name}</TableCell>
-                                          <TableCell>{asset.symbol}</TableCell>
-                                          <TableCell className="text-right">
-                                              {asset.price !== undefined && asset.price !== null && !isNaN(asset.price)
-                                                  ? `$${Number(asset.price).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
-                                                  : "-"
-                                              }
-                                          </TableCell>
-                                          <TableCell className={`text-right ${asset.change !== undefined && asset.change !== null && !isNaN(asset.change) && asset.change >= 0
-                                                  ? "text-positive"
-                                                  : "text-negative"
-                                              }`}>
-                                              {asset.change !== undefined && asset.change !== null && !isNaN(asset.change)
-                                                  ? `${Number(asset.change).toFixed(2)} (${asset.changePercent !== undefined && asset.changePercent !== null && !isNaN(asset.changePercent)
-                                                      ? Number(asset.changePercent).toFixed(2)
-                                                      : "-"
-                                                  }%)`
-                                                  : "-"}
-                                          </TableCell>
-                                          {/* <TableCell className="text-right">
-                                              {asset.marketCap !== undefined && asset.marketCap !== null
-                                                  ? `$${Number(asset.marketCap).toLocaleString()}`
-                                                  : "-"}
-                                          </TableCell> */}
-                                          <TableCell className="text-right">
-                                              <Button
-                                                  size="icon"
-                                                  variant="outline"
-                                                  onClick={() => handleAddAssetToPortfolio(asset)}
-                                                  aria-label="Agregar a portafolio"
-                                              >
-                                                  <PlusCircle className="h-5 w-5" />
-                                              </Button>
-                                          </TableCell>
-                                      </TableRow>
-                                  ))}
-                              </TableBody>
-                          </Table>
-                      </CardContent>
-                  </Card>
-                  
-
-
-                    
-                  {/* Gráfico de precios intradiario de Apple */}
-                  <Card className="mb-8 w-full">
-                      <CardHeader>
-                          <CardTitle>Gráfico de precios intradiario de la accion mas operada del dia: (AAPL)</CardTitle>
-                      </CardHeader>
-                      <CardContent>
-                          <AssetPriceChart />
-                      </CardContent>
-                  </Card>
-              </>
-          )}
-        </motion.div>
-    );
+                  </TableCell>
+                  <TableCell className={`text-right ${asset.change !== undefined && asset.change !== null && !isNaN(asset.change) && asset.change >= 0
+                    ? "text-positive"
+                    : "text-negative"
+                  }`}>
+                    {asset.change !== undefined && asset.change !== null && !isNaN(asset.change)
+                      ? `${Number(asset.change).toFixed(2)} (${asset.changePercent !== undefined && asset.changePercent !== null && !isNaN(asset.changePercent)
+                        ? Number(asset.changePercent).toFixed(2)
+                        : "-"
+                      }%)`
+                      : "-"}
+                  </TableCell>
+                  <TableCell className="text-right">
+                    <Button
+                      size="icon"
+                      variant="ghost"
+                      onClick={() => handleToggleFavorite(asset)}
+                      aria-label={isFavorite(asset) ? "Quitar de favoritos" : "Agregar a favoritos"}
+                    >
+                      {isFavorite(asset) ? (
+                        <StarOff className="h-5 w-5 text-yellow-400" />
+                      ) : (
+                        <Star className="h-5 w-5 text-yellow-400" />
+                      )}
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </CardContent>
+      </Card>
+    </motion.div>
+  );
 }
 
 function AssetPriceChart() {
