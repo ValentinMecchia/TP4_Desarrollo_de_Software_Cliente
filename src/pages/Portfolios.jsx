@@ -162,17 +162,26 @@ export default function PortfoliosPage() {
     fetchPortfolios();
   };
 
-  if (loading) {
+  // Nuevo: loading visual para portfoliosWithValue
+  const isEnriching = loading || portfoliosWithValue.length === 0;
+
+  // Solo mostrar el mensaje de "no tienes ningún portafolio" si NO está cargando y portfolios y portfoliosWithValue están vacíos
+  const showNoPortfolios =
+    !loading &&
+    portfolios.length === 0 &&
+    portfoliosWithValue.length === 0;
+
+  if (loading && portfoliosWithValue.length === 0) {
     return (
       <AnimatePresence>
         <motion.div
-          className="flex flex-col items-center justify-center py-16"
+          className="flex flex-col items-center justify-center min-h-[60vh] w-full"
           initial={{ opacity: 0, y: 40, scale: 0.97 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}
           exit={{ opacity: 0, y: -40, scale: 0.97 }}
           transition={{ duration: 0.5, type: "spring" }}
         >
-          <span className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full mb-4"></span>
+          <span className="animate-spin h-10 w-10 border-4 border-primary border-t-transparent rounded-full mb-4"></span>
           <p className="text-lg text-muted-foreground">Cargando portfolios...</p>
         </motion.div>
       </AnimatePresence>
@@ -199,7 +208,7 @@ export default function PortfoliosPage() {
 
   return (
     <motion.div
-      className="container mx-auto py-8"
+      className="container mx-auto py-4 px-2 sm:px-4"
       initial={{ opacity: 0, y: 40, scale: 0.97 }}
       animate={{ opacity: 1, y: 0, scale: 1 }}
       exit={{ opacity: 0, y: -40, scale: 0.97 }}
@@ -218,21 +227,21 @@ export default function PortfoliosPage() {
           onEdit={handlePortfolioEdited}
         />
       )}
-      <div className="flex flex-col sm:flex-row justify-between items-center mb-10 gap-4">
-        <h1 className="text-3xl sm:text-4xl font-headline font-bold">
+      <div className="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4">
+        <h1 className="text-2xl sm:text-3xl font-headline font-bold text-center w-full sm:w-auto">
           <span className="bg-clip-text text-transparent bg-gradient-to-r from-primary via-accent to-secondary-foreground">
             Mis Portafolios
           </span>
         </h1>
         <Button
-          className="shadow-lg hover:shadow-primary/40"
+          className="shadow-lg hover:shadow-primary/40 w-full sm:w-auto"
           onClick={handleCreatePortfolio}
         >
           <PlusCircle className="mr-2 h-5 w-5" /> Crear Portafiolio
         </Button>
       </div>
 
-      {portfoliosWithValue.length === 0 ? (
+      {showNoPortfolios ? (
         <Card className={`text-center py-12 ${cardHoverEffect}`}>
           <CardHeader>
             <FolderArchive className="h-16 w-16 text-primary mx-auto mb-4" />
@@ -246,7 +255,7 @@ export default function PortfoliosPage() {
           <CardContent>
             <Button
               size="lg"
-              className="shadow-lg hover:shadow-primary/40"
+              className="shadow-lg hover:shadow-primary/40 w-full sm:w-auto"
               onClick={handleCreatePortfolio}
             >
               <PlusCircle className="mr-2 h-5 w-5" /> Crear Portafolio
@@ -254,34 +263,38 @@ export default function PortfoliosPage() {
           </CardContent>
         </Card>
       ) : (
-        <div className="flex flex-col gap-6">
+        <div className="flex flex-col gap-4 sm:gap-6">
+          {loading && portfoliosWithValue.length > 0 && (
+            <div className="flex items-center gap-2 mb-4 text-muted-foreground">
+              <span className="animate-spin h-5 w-5 border-2 border-primary border-t-transparent rounded-full"></span>
+              Actualizando portfolios...
+            </div>
+          )}
           {portfoliosWithValue.map((portfolio) => (
             <Card
               key={portfolio.id}
-              className={`flex flex-row w-full cursor-pointer ${cardHoverEffect} items-center`}
+              className={`flex flex-col sm:flex-row w-full cursor-pointer ${cardHoverEffect} items-center ${loading ? "opacity-60 pointer-events-none grayscale" : ""}`}
               onClick={() => handlePortfolioCardClick(portfolio)}
             >
-              <div className="flex flex-col flex-1 px-6 py-4">
-                <div className="flex flex-row items-center justify-between">
-                  <CardTitle className="font-headline text-xl text-primary">
+              <div className="flex flex-col flex-1 px-3 py-3 sm:px-6 sm:py-4 w-full">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
+                  <CardTitle className="font-headline text-lg sm:text-xl text-primary break-words max-w-full">
                     {portfolio.name}
                   </CardTitle>
-                  <div className="flex space-x-2">
-                    <div className="flex flex-row flex-wrap gap-6 mt-2 mr-4">
-                      <div>
-                        <span className="inline-block text-xs text-muted-foreground mr-1">
-                          Valor total
-                        </span>
-                        <span className="font-semibold text-base">
-                          $
-                          {portfolio.totalValue !== undefined
-                            ? Number(portfolio.totalValue).toLocaleString(undefined, {
-                                minimumFractionDigits: 2,
-                                maximumFractionDigits: 2,
-                              })
-                            : ""}
-                        </span>
-                      </div>
+                  <div className="flex flex-row flex-wrap gap-2 sm:gap-6 mt-2 sm:mt-0">
+                    <div>
+                      <span className="inline-block text-xs text-muted-foreground mr-1">
+                        Valor total
+                      </span>
+                      <span className="font-semibold text-base">
+                        $
+                        {portfolio.totalValue !== undefined
+                          ? Number(portfolio.totalValue).toLocaleString(undefined, {
+                              minimumFractionDigits: 2,
+                              maximumFractionDigits: 2,
+                            })
+                          : ""}
+                      </span>
                     </div>
                     <Button
                       variant="outline"
@@ -291,6 +304,8 @@ export default function PortfoliosPage() {
                         e.stopPropagation();
                         handleEditPortfolio(portfolio);
                       }}
+                      disabled={loading}
+                      className="hidden sm:inline-flex"
                     >
                       <Edit3 className="h-4 w-4" />
                     </Button>
@@ -302,6 +317,8 @@ export default function PortfoliosPage() {
                         e.stopPropagation();
                         handleDeletePortfolio(portfolio.id);
                       }}
+                      disabled={loading}
+                      className="hidden sm:inline-flex"
                     >
                       <Trash2 className="h-4 w-4" />
                     </Button>
@@ -313,12 +330,14 @@ export default function PortfoliosPage() {
                         e.stopPropagation();
                         handlePortfolioCardClick(portfolio);
                       }}
+                      disabled={loading}
+                      className="hidden sm:inline-flex"
                     >
                       <ChevronRight className="h-4 w-4" />
                     </Button>
                   </div>
                 </div>
-                <CardDescription className="mt-1 mb-2">
+                <CardDescription className="mt-1 mb-2 break-words max-w-full">
                   {portfolio.description ? (
                     <span className="text-muted-foreground">
                       {portfolio.description}
@@ -329,6 +348,48 @@ export default function PortfoliosPage() {
                     </span>
                   )}
                 </CardDescription>
+                {/* Botones para mobile */}
+                <div className="flex flex-row gap-2 mt-2 sm:hidden w-full">
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    aria-label="Edit Portfolio"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleEditPortfolio(portfolio);
+                    }}
+                    disabled={loading}
+                    className="flex-1"
+                  >
+                    <Edit3 className="h-4 w-4" />
+                  </Button>
+                  <Button
+                    variant="destructive"
+                    size="icon"
+                    aria-label="Delete Portfolio"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleDeletePortfolio(portfolio.id);
+                    }}
+                    disabled={loading}
+                    className="flex-1"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    aria-label="Ver detalles"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handlePortfolioCardClick(portfolio);
+                    }}
+                    disabled={loading}
+                    className="flex-1"
+                  >
+                    <ChevronRight className="h-4 w-4" />
+                  </Button>
+                </div>
               </div>
             </Card>
           ))}

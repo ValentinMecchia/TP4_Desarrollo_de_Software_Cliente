@@ -69,35 +69,39 @@ export function UserNav() {
 
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button variant="ghost" className="relative h-9 w-9 rounded-full">
-          <Avatar className="h-9 w-9">
-            <AvatarImage src={photoURL} alt={displayName || "User avatar"} />
-            <AvatarFallback>{getInitials(displayName)}</AvatarFallback>
-          </Avatar>
+    <DropdownMenuTrigger asChild>
+        <Button
+            variant="ghost"
+            className="w-full sm:w-auto h-12 min-w-[48px] min-h-[48px] rounded-full flex items-center justify-center p-0 focus:outline-none focus:ring-2 focus:ring-primary/50"
+            tabIndex={0}
+        >
+            <Avatar className="h-9 w-9">
+                <AvatarImage src={photoURL} alt={displayName || "User avatar"} />
+                <AvatarFallback>{getInitials(displayName)}</AvatarFallback>
+            </Avatar>
         </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent className="w-56" align="end" forceMount>
+    </DropdownMenuTrigger>
+    <DropdownMenuContent className="w-56" align="end" forceMount>
         <DropdownMenuLabel className="font-normal">
-          <div className="flex flex-col space-y-1">
-            <p className="text-sm font-medium leading-none">{displayName || "User"}</p>
-            <p className="text-xs leading-none text-muted-foreground">{email}</p>
-          </div>
+            <div className="flex flex-col space-y-1">
+                <p className="text-sm font-medium leading-none">{displayName || "User"}</p>
+                <p className="text-xs leading-none text-muted-foreground">{email}</p>
+            </div>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
-          <DropdownMenuItem asChild>
-            <Link to={ROUTES.SETTINGS} className="cursor-pointer">
-              <Settings className="mr-2 h-4 w-4" />
-              <span>Configuración</span>
-            </Link>
-          </DropdownMenuItem>
-          <DropdownMenuItem onClick={signOut} className="cursor-pointer">
-            <LogOut className="mr-2 h-4 w-4" />
-            <span>Cerrar sesión</span>
-          </DropdownMenuItem>
+            <DropdownMenuItem asChild>
+                <Link to={ROUTES.SETTINGS} className="cursor-pointer">
+                    <Settings className="mr-2 h-4 w-4" />
+                    <span>Configuración</span>
+                </Link>
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={signOut} className="cursor-pointer">
+                <LogOut className="mr-2 h-4 w-4" />
+                <span>Cerrar sesión</span>
+            </DropdownMenuItem>
         </DropdownMenuGroup>
-      </DropdownMenuContent>
-    </DropdownMenu>
+    </DropdownMenuContent>
+</DropdownMenu>
   );
 }

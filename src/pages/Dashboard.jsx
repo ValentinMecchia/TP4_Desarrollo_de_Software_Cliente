@@ -25,26 +25,28 @@ function AssetPieChart({ assets }) {
   if (data.length === 0) return <div className="text-muted-foreground text-sm">Sin activos</div>;
 
   return (
-    <div className="w-full flex flex-col items-center">
-      <RechartsPieChart width={400} height={300}>
-        <Pie
-          data={data}
-          dataKey="value"
-          nameKey="name"
-          cx="50%"
-          cy="50%"
-          outerRadius={80}
-          label={({ name, percent }) => `${name} (${(percent * 100).toFixed(0)}%)`}
-        >
-          {data.map((entry, idx) => (
-            <Cell key={entry.name} fill={PIE_COLORS[idx % PIE_COLORS.length]} />
-          ))}
-        </Pie>
-        <PieTooltip
-          formatter={(value, name) => [`${value} acciones`, "Cantidad"]}
-        />
-        <PieLegend verticalAlign="bottom" height={36} />
-      </RechartsPieChart>
+    <div className="w-full flex flex-col items-center overflow-x-auto">
+      <div className="w-full max-w-xs sm:max-w-md md:max-w-lg lg:max-w-xl">
+        <RechartsPieChart width={320} height={220}>
+          <Pie
+            data={data}
+            dataKey="value"
+            nameKey="name"
+            cx="50%"
+            cy="50%"
+            outerRadius={80}
+            label={({ name, percent }) => `${name} (${(percent * 100).toFixed(0)}%)`}
+          >
+            {data.map((entry, idx) => (
+              <Cell key={entry.name} fill={PIE_COLORS[idx % PIE_COLORS.length]} />
+            ))}
+          </Pie>
+          <PieTooltip
+            formatter={(value, name) => [`${value} acciones`, "Cantidad"]}
+          />
+          <PieLegend verticalAlign="bottom" height={36} />
+        </RechartsPieChart>
+      </div>
     </div>
   );
 }
@@ -235,7 +237,7 @@ export default function DashboardPage() {
   if (loading) {
     return (
       <motion.div
-        className="flex flex-col items-center justify-center py-16"
+        className="flex flex-col items-center justify-center py-16 w-full min-h-[60vh]"
         initial={{ opacity: 0, scale: 0.95, y: 40 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
         exit={{ opacity: 0, scale: 0.95, y: -40 }}
@@ -249,14 +251,14 @@ export default function DashboardPage() {
 
   return (
     <motion.div
-      className="container mx-auto py-8"
+      className="w-full min-h-screen px-1 sm:px-2 md:px-4 overflow-x-auto"
       initial={{ opacity: 0, scale: 0.97, y: 60 }}
       animate={{ opacity: 1, scale: 1, y: 0 }}
       exit={{ opacity: 0, scale: 0.97, y: -60 }}
       transition={{ duration: 0.7, type: "spring" }}
     >
       <motion.h1
-        className="text-3xl sm:text-4xl font-headline font-bold mb-10"
+        className="text-2xl sm:text-4xl font-headline font-bold mb-6 sm:mb-10 text-center break-words"
         initial={{ opacity: 0, y: -40 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.7, type: "spring" }}
@@ -267,7 +269,7 @@ export default function DashboardPage() {
       </motion.h1>
 
       <motion.div
-        className="grid gap-6 md:grid-cols-2 lg:grid-cols-4 mb-8"
+        className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-6 sm:mb-8"
         initial="hidden"
         animate="visible"
         variants={{
@@ -363,7 +365,7 @@ export default function DashboardPage() {
       </motion.div>
 
       <motion.div
-        className="grid gap-6 md:grid-cols-1 lg:grid-cols-2"
+        className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6"
         initial="hidden"
         animate="visible"
         variants={{

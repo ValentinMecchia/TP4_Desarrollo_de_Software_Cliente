@@ -262,7 +262,7 @@ export default function PortfolioDetails({ portfolioId, onBack }) {
 
   return (
     <motion.div
-      className="container mx-auto py-8 max-w-5xl"
+      className="container mx-auto py-4 px-1 sm:px-4 max-w-5xl"
       initial={{ opacity: 0, y: 40, scale: 0.97 }}
       animate={{ opacity: 1, y: 0, scale: 1 }}
       exit={{ opacity: 0, y: -40, scale: 0.97 }}
@@ -279,7 +279,7 @@ export default function PortfolioDetails({ portfolioId, onBack }) {
       </Button>
       <Card className="mb-8">
         <CardHeader>
-          <CardTitle className="font-headline text-2xl">
+          <CardTitle className="font-headline text-2xl break-words">
             {portfolio.name}
           </CardTitle>
           <CardDescription>
@@ -323,11 +323,12 @@ export default function PortfolioDetails({ portfolioId, onBack }) {
             <span className="font-semibold">Acciones en portafolio:</span>
             {enriching && (
               <span className="ml-2 text-xs text-muted-foreground">
+                <span className="animate-spin h-4 w-4 border-2 border-primary border-t-transparent rounded-full inline-block mr-2 align-middle"></span>
                 Actualizando cotizaciones...
               </span>
             )}
-            <div className="overflow-x-auto mt-2 rounded-md">
-              <table className="w-full text-sm rounded border">
+            <div className={`overflow-x-auto mt-2 rounded-md ${enriching ? "opacity-60 pointer-events-none grayscale" : ""}`}>
+              <table className="w-full min-w-[520px] text-sm rounded border">
                 <thead>
                   <tr className="border-b bg-muted">
                     <th className="text-left py-2 px-2">Símbolo</th>
@@ -356,7 +357,7 @@ export default function PortfolioDetails({ portfolioId, onBack }) {
                         className="border-b bg-muted/50 hover:bg-muted/80 transition"
                       >
                         <td className="py-2 px-2 font-bold">{asset.symbol}</td>
-                        <td className="py-2 px-2">
+                        <td className="py-2 px-2 break-words max-w-[120px]">
                           {asset.companyName || asset.name || "-"}
                         </td>
                         <td className="py-2 px-2 text-right">
@@ -422,6 +423,7 @@ export default function PortfolioDetails({ portfolioId, onBack }) {
                                 asset.quantity
                               )
                             }
+                            disabled={enriching}
                           >
                             <Pencil className="h-4 w-4" />
                           </Button>
@@ -430,6 +432,7 @@ export default function PortfolioDetails({ portfolioId, onBack }) {
                             size="icon"
                             aria-label="Eliminar"
                             onClick={() => handleDeleteAsset(asset.symbol)}
+                            disabled={enriching}
                           >
                             <Trash2 className="h-4 w-4" />
                           </Button>

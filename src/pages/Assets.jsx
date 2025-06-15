@@ -1,90 +1,114 @@
 import React, { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { ArrowUpRight, ArrowDownRight, LineChart, WalletCards, AreaChart, Sparkles, PlusCircle, Search, Star, StarOff, Pencil, Save, X } from "lucide-react";
-import { ResponsiveContainer, LineChart as RechartsLineChart, Line, Tooltip, CartesianGrid, XAxis, YAxis } from "recharts";
+import {
+  WalletCards,
+  Sparkles,
+  Search,
+  Star,
+  StarOff,
+  Pencil,
+  Save,
+} from "lucide-react";
+import {
+  ResponsiveContainer,
+  LineChart as RechartsLineChart,
+  Line,
+  Tooltip,
+  CartesianGrid,
+  XAxis,
+  YAxis,
+} from "recharts";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { API_BASE_URL } from "@/constants/api";
 import AddAssetModal from "@/components/assets/AddAssetModal";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 
-const cardHoverEffect = "transition-all duration-300 ease-in-out hover:shadow-2xl hover:-translate-y-1 hover:shadow-primary/20 border border-border hover:border-primary/30";
+// Efecto visual en Card
+const cardHoverEffect =
+  "transition-all duration-300 ease-in-out hover:shadow-2xl hover:-translate-y-1 hover:shadow-primary/20 border border-border hover:border-primary/30";
 
-// Vista compacta de detalles de asset (similar a AssetDetailsCompact del modal)
+// Vista compacta de detalles de asset
 function AssetDetailsCompact({ symbol, onBack }) {
-    const [details, setDetails] = useState(null);
-    const [loading, setLoading] = useState(false);
+  const [details, setDetails] = useState(null);
+  const [loading, setLoading] = useState(false);
 
-    useEffect(() => {
-        if (!symbol) {
-            setDetails(null);
-            return;
-        }
-        setLoading(true);
-        fetch(`${API_BASE_URL}/api/yahoo/market/quotes/realtime/${encodeURIComponent(symbol)}`)
-            .then(res => res.json())
-            .then(data => setDetails(data?.body || {}))
-            .catch(() => setDetails(null))
-            .finally(() => setLoading(false));
-    }, [symbol]);
+  useEffect(() => {
+    if (!symbol) {
+      setDetails(null);
+      return;
+    }
+    setLoading(true);
+    fetch(`${API_BASE_URL}/api/yahoo/market/quotes/realtime/${encodeURIComponent(symbol)}`)
+      .then(res => res.json())
+      .then(data => setDetails(data?.body || {}))
+      .catch(() => setDetails(null))
+      .finally(() => setLoading(false));
+  }, [symbol]);
 
-    const info = details || {};
+  const info = details || {};
 
-    return (
-        <div className="w-full flex flex-col px-1 sm:px-2 py-2">
-            <Button variant="ghost" size="sm" onClick={onBack} className="mb-2 w-fit">
-                Volver
-            </Button>
-            {loading ? (
-                <div className="flex-1 flex items-center justify-center text-muted-foreground">
-                    <span className="animate-spin h-6 w-6 border-4 border-primary border-t-transparent rounded-full mr-3"></span>
-                    Cargando detalles...
-                </div>
-            ) : info.symbol ? (
-                <div className="flex flex-col gap-2">
-                    <div className="flex flex-wrap gap-4 items-center">
-                        <div>
-                            <span className="font-semibold text-xs">Precio: </span>
-                            <span className="text-base font-bold text-primary">
-                                {info.primaryData?.lastSalePrice || "-"}
-                            </span>
-                        </div>
-                        <div>
-                            <span className="font-semibold text-xs">Var: </span>
-                            <span
-                                className={
-                                    (info.primaryData?.netChange?.startsWith("-")
-                                        ? "text-red-500 dark:text-red-400"
-                                        : "text-green-600 dark:text-green-400") +
-                                    " font-semibold"
-                                }
-                            >
-                                {info.primaryData?.netChange || "-"}{" "}
-                                <span className="text-muted-foreground">
-                                    ({info.primaryData?.percentageChange || "-"})
-                                </span>
-                            </span>
-                        </div>
-                        <div>
-                            <span className="font-semibold text-xs">Exchange: </span>
-                            <span className="text-sm text-muted-foreground">
-                                {info.exchange || "-"}
-                            </span>
-                        </div>
-                    </div>
-                </div>
-            ) : (
-                <div className="flex-1 flex items-center justify-center text-destructive">
-                    No se encontraron datos para este activo.
-                </div>
-            )}
+  return (
+    <div className="w-full flex flex-col px-1 sm:px-2 py-2">
+      <Button variant="ghost" size="sm" onClick={onBack} className="mb-2 w-fit">
+        Volver
+      </Button>
+      {loading ? (
+        <div className="flex-1 flex items-center justify-center text-muted-foreground">
+          <span className="animate-spin h-6 w-6 border-4 border-primary border-t-transparent rounded-full mr-3"></span>
+          Cargando detalles...
         </div>
-    );
+      ) : info.symbol ? (
+        <div className="flex flex-col gap-2">
+          <div className="flex flex-wrap gap-4 items-center">
+            <div>
+              <span className="font-semibold text-xs">Precio: </span>
+              <span className="text-base font-bold text-primary">
+                {info.primaryData?.lastSalePrice || "-"}
+              </span>
+            </div>
+            <div>
+              <span className="font-semibold text-xs">Var: </span>
+              <span
+                className={
+                  (info.primaryData?.netChange && info.primaryData?.netChange.toString().startsWith("-")
+                    ? "text-red-500 dark:text-red-400"
+                    : "text-green-600 dark:text-green-400") + " font-semibold"
+                }
+              >
+                {info.primaryData?.netChange || "-"}{" "}
+                <span className="text-muted-foreground">
+                  ({info.primaryData?.percentageChange || "-"})
+                </span>
+              </span>
+            </div>
+            <div>
+              <span className="font-semibold text-xs">Exchange: </span>
+              <span className="text-sm text-muted-foreground">{info.exchange || "-"}</span>
+            </div>
+          </div>
+        </div>
+      ) : (
+        <div className="flex-1 flex items-center justify-center text-destructive">
+          No se encontraron datos para este activo.
+        </div>
+      )}
+    </div>
+  );
 }
 
 // Favoritos de acciones
-function FavoriteAssetsSection({ favorites, onRemove, onEditComment, editingId, commentDraft, setCommentDraft, setEditingId, handleSaveComment }) {
+function FavoriteAssetsSection({
+  favorites,
+  onRemove,
+  onEditComment,
+  editingId,
+  commentDraft,
+  setCommentDraft,
+  setEditingId,
+  handleSaveComment,
+}) {
   return (
     <Card className={`mb-8 w-full ${cardHoverEffect}`}>
       <CardHeader>
@@ -102,63 +126,174 @@ function FavoriteAssetsSection({ favorites, onRemove, onEditComment, editingId, 
             No tienes acciones favoritas aún.
           </div>
         ) : (
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Nombre</TableHead>
-                <TableHead>Símbolo</TableHead>
-                <TableHead>Comentario</TableHead>
-                <TableHead className="text-right">Acciones</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {favorites.map((fav, idx) => (
-                <TableRow key={fav.id || fav.symbol || idx}>
-                  <TableCell>{fav.name || fav.symbol}</TableCell>
-                  <TableCell>{fav.symbol || fav.url}</TableCell>
-                  <TableCell>
-                    {editingId === fav.id ? (
-                      <div className="flex flex-col gap-2">
-                        <Input
-                          value={commentDraft}
-                          onChange={e => setCommentDraft(e.target.value)}
-                          className="w-full"
-                        />
-                        <div className="flex gap-2">
-                          <Button size="sm" onClick={() => handleSaveComment(fav)}>
-                            <Save className="h-4 w-4 mr-1" /> Guardar
-                          </Button>
-                          <Button size="sm" variant="outline" onClick={() => setEditingId(null)}>
-                            Cancelar
+          <div className="overflow-x-auto">
+            <Table className="min-w-[400px]">
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Nombre</TableHead>
+                  <TableHead>Símbolo</TableHead>
+                  <TableHead>Comentario</TableHead>
+                  <TableHead className="text-right">Acciones</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {favorites.map((fav, idx) => (
+                  <TableRow key={fav.id || fav.symbol || idx}>
+                    <TableCell>{fav.name || fav.symbol}</TableCell>
+                    <TableCell>{fav.symbol || fav.url}</TableCell>
+                    <TableCell>
+                      {editingId === fav.id ? (
+                        <div className="flex flex-col gap-2">
+                          <Input
+                            value={commentDraft}
+                            onChange={e => setCommentDraft(e.target.value)}
+                            className="w-full"
+                          />
+                          <div className="flex gap-2">
+                            <Button size="sm" onClick={() => handleSaveComment(fav)}>
+                              <Save className="h-4 w-4 mr-1" /> Guardar
+                            </Button>
+                            <Button size="sm" variant="outline" onClick={() => setEditingId(null)}>
+                              Cancelar
+                            </Button>
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="flex items-center gap-2">
+                          <span>
+                            {fav.comment ||
+                              fav.content ||
+                              <span className="italic text-muted-foreground">Sin comentario</span>}
+                          </span>
+                          <Button size="icon" variant="ghost" onClick={() => onEditComment(fav)}>
+                            <Pencil className="h-4 w-4" />
                           </Button>
                         </div>
-                      </div>
-                    ) : (
-                      <div className="flex items-center gap-2">
-                        <span>{fav.comment || fav.content || <span className="italic text-muted-foreground">Sin comentario</span>}</span>
-                        <Button size="icon" variant="ghost" onClick={() => onEditComment(fav)}>
-                          <Pencil className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    )}
-                  </TableCell>
-                  <TableCell className="text-right">
-                    <Button
-                      size="icon"
-                      variant="destructive"
-                      onClick={() => onRemove(fav)}
-                      aria-label="Eliminar favorito"
-                    >
-                      <StarOff className="h-5 w-5 text-yellow-400" />
-                    </Button>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+                      )}
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <Button
+                        size="icon"
+                        variant="destructive"
+                        onClick={() => onRemove(fav)}
+                        aria-label="Eliminar favorito"
+                      >
+                        <StarOff className="h-5 w-5 text-yellow-400" />
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
         )}
       </CardContent>
     </Card>
+  );
+}
+
+// Gráfico de precios de ejemplo
+function AssetPriceChart() {
+  const symbol = "AAPL";
+  const [prices, setPrices] = useState([]);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    async function fetchPrices() {
+      setLoading(true);
+      try {
+        const res = await fetch(
+          `${API_BASE_URL}/api/yahoo/market/quotes/history/${encodeURIComponent(symbol)}`
+        );
+        const historyData = await res.json();
+
+        let arr = [];
+        if (Array.isArray(historyData?.data?.items)) {
+          arr = historyData.data.items;
+        } else if (Array.isArray(historyData?.body)) {
+          arr = historyData.body;
+        } else if (Array.isArray(historyData)) {
+          arr = historyData;
+        }
+
+        const chartData = arr
+          .map((item) => ({
+            date: item.date
+              ? new Date(item.date * 1000).toLocaleTimeString([], {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                })
+              : item.formattedDate || "",
+            price: item.close ?? item.price ?? item.last ?? null,
+          }))
+          .filter((d) => d.price !== null);
+
+        setPrices(chartData);
+      } catch {
+        setPrices([]);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchPrices();
+  }, [symbol]);
+
+  return (
+    <div>
+      <h2 className="font-medium mb-2">Gráfico de precios para {symbol}</h2>
+      {loading ? (
+        <p>Cargando gráfico...</p>
+      ) : prices.length > 1 ? (
+        <div style={{ width: "100%", height: 240 }}>
+          <ResponsiveContainer width="100%" height="100%">
+            <RechartsLineChart data={prices}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis
+                dataKey="date"
+                minTickGap={16}
+                fontSize={10}
+                label={{
+                  value: "Hora",
+                  position: "insideBottomRight",
+                  offset: -5,
+                }}
+                tick={{ fontSize: 10 }}
+                interval="preserveStartEnd"
+                ticks={
+                  prices.length > 0
+                    ? [
+                        prices[0].date,
+                        prices[Math.floor(prices.length / 2)].date,
+                        prices[prices.length - 1].date,
+                      ]
+                    : []
+                }
+              />
+              <YAxis
+                domain={["auto", "auto"]}
+                fontSize={10}
+                label={{
+                  value: "Precio",
+                  angle: -90,
+                  position: "insideLeft",
+                  offset: 10,
+                }}
+              />
+              <Tooltip />
+              <Line
+                type="monotone"
+                dataKey="price"
+                stroke="#2563eb"
+                dot={false}
+                strokeWidth={2}
+              />
+            </RechartsLineChart>
+          </ResponsiveContainer>
+        </div>
+      ) : (
+        <p>No hay datos para mostrar.</p>
+      )}
+    </div>
   );
 }
 
@@ -243,9 +378,7 @@ export default function AssetsPage() {
       });
       if (res.ok) {
         setFavorites((prev) =>
-          prev.map((f) =>
-            f.id === fav.id ? { ...f, comment: commentDraft } : f
-          )
+          prev.map((f) => (f.id === fav.id ? { ...f, comment: commentDraft } : f))
         );
       }
     } catch {
@@ -254,25 +387,26 @@ export default function AssetsPage() {
     setEditingId(null);
   };
 
-  // Buscar assets usando la API de Yahoo de tu backend
+  // Buscar assets
   const handleSearch = async (e) => {
     e.preventDefault();
     setSearching(true);
     setError("");
     setSearchResults([]);
     try {
-      const res = await fetch(`${API_BASE_URL}/api/yahoo/search/${encodeURIComponent(search.trim())}`);
+      const res = await fetch(
+        `${API_BASE_URL}/api/yahoo/search/${encodeURIComponent(search.trim())}`
+      );
       const data = await res.json();
 
       const arr = Array.isArray(data?.body)
         ? data.body
         : Array.isArray(data?.data?.items)
-          ? data.data.items
-          : Array.isArray(data?.items)
-            ? data.items
-            : [];
+        ? data.data.items
+        : Array.isArray(data?.items)
+        ? data.items
+        : [];
 
-      // Enriquecer cada asset con cotización usando el endpoint correcto
       const enrichedResults = await Promise.all(
         arr.map(async (item) => {
           const symbol = item.symbol || item.ticker || item.code || "";
@@ -282,7 +416,9 @@ export default function AssetsPage() {
             shortname: item.shortname || item.name || item.longname || "",
           };
           try {
-            const quoteRes = await fetch(`${API_BASE_URL}/api/yahoo/market/quotes/realtime/${encodeURIComponent(symbol)}`);
+            const quoteRes = await fetch(
+              `${API_BASE_URL}/api/yahoo/market/quotes/realtime/${encodeURIComponent(symbol)}`
+            );
             if (!quoteRes.ok) return enriched;
             const quoteData = await quoteRes.json();
             const info = quoteData?.body || {};
@@ -296,7 +432,8 @@ export default function AssetsPage() {
 
             let changePercent = info.primaryData?.percentageChange;
             if (typeof changePercent === "string") changePercent = Number(changePercent.replace(/[%]/g, ""));
-            if ((!changePercent || isNaN(changePercent)) && info.regularMarketChangePercent) changePercent = Number(info.regularMarketChangePercent);
+            if ((!changePercent || isNaN(changePercent)) && info.regularMarketChangePercent)
+              changePercent = Number(info.regularMarketChangePercent);
 
             return {
               ...enriched,
@@ -318,9 +455,8 @@ export default function AssetsPage() {
     }
   };
 
-  // Trending assets (máximo 5 para evitar rate limit)
+  // Trending assets
   useEffect(() => {
-    // Limita a 5 símbolos populares
     const symbols = ["AAPL", "TSLA", "MSFT", "GOOGL", "AMZN"];
     Promise.all(
       symbols.map(async (symbol) => {
@@ -342,7 +478,8 @@ export default function AssetsPage() {
 
           let changePercent = info.primaryData?.percentageChange;
           if (typeof changePercent === "string") changePercent = Number(changePercent.replace(/[%]/g, ""));
-          if ((!changePercent || isNaN(changePercent)) && info.regularMarketChangePercent) changePercent = Number(info.regularMarketChangePercent);
+          if ((!changePercent || isNaN(changePercent)) && info.regularMarketChangePercent)
+            changePercent = Number(info.regularMarketChangePercent);
 
           return {
             symbol,
@@ -356,20 +493,20 @@ export default function AssetsPage() {
           return null;
         }
       })
-    ).then(results => {
+    ).then((results) => {
       setTrendingAssets(results.filter(Boolean));
     });
   }, []);
 
-  // Favorito: ¿es favorito?
+  // ¿Es favorito?
   const isFavorite = (asset) => {
-    return favorites.some(f => f.symbol === asset.symbol);
+    return favorites.some((f) => f.symbol === asset.symbol);
   };
 
-  // Guardar como favorito desde búsqueda o trending
+  // Toggle favorito
   const handleToggleFavorite = (asset) => {
     if (isFavorite(asset)) {
-      const fav = favorites.find(f => f.symbol === asset.symbol);
+      const fav = favorites.find((f) => f.symbol === asset.symbol);
       if (fav) removeFavorite(fav);
     } else {
       addFavorite(asset);
@@ -378,33 +515,35 @@ export default function AssetsPage() {
 
   return (
     <motion.div
-      className="container mx-auto py-8 px-4 sm:px-6 lg:px-8"
+      className="container mx-auto py-4 px-1 sm:px-4 overflow-x-auto"
       initial={{ opacity: 0, y: 40, scale: 0.97 }}
       animate={{ opacity: 1, y: 0, scale: 1 }}
       exit={{ opacity: 0, y: -40, scale: 0.97 }}
       transition={{ duration: 0.5, type: "spring" }}
     >
       {/* Favoritos */}
-      <FavoriteAssetsSection
-        favorites={favorites}
-        onRemove={removeFavorite}
-        onEditComment={handleEditComment}
-        editingId={editingId}
-        commentDraft={commentDraft}
-        setCommentDraft={setCommentDraft}
-        setEditingId={setEditingId}
-        handleSaveComment={handleSaveComment}
-      />
+      <div className="overflow-x-auto">
+        <FavoriteAssetsSection
+          favorites={favorites}
+          onRemove={removeFavorite}
+          onEditComment={handleEditComment}
+          editingId={editingId}
+          commentDraft={commentDraft}
+          setCommentDraft={setCommentDraft}
+          setEditingId={setEditingId}
+          handleSaveComment={handleSaveComment}
+        />
+      </div>
 
       {/* Barra de búsqueda */}
-      <form onSubmit={handleSearch} className="flex w-full gap-2 mb-8">
+      <form onSubmit={handleSearch} className="flex flex-col sm:flex-row w-full gap-2 mb-8">
         <Input
           placeholder="Buscar asset por nombre o símbolo (ej: AAPL, Tesla, etc)"
           value={search}
           onChange={e => setSearch(e.target.value)}
-          className="flex-1"
+          className="flex-1 min-w-0"
         />
-        <Button type="submit" disabled={!search.trim() || searching}>
+        <Button type="submit" disabled={!search.trim() || searching} className="w-full sm:w-auto">
           <Search className="h-4 w-4" />
           <span className="ml-2">Buscar</span>
         </Button>
@@ -425,10 +564,7 @@ export default function AssetsPage() {
             <CardTitle>Detalles del Asset</CardTitle>
           </CardHeader>
           <CardContent>
-            <AssetDetailsCompact
-              symbol={selectedSymbol}
-              onBack={() => setSelectedSymbol(null)}
-            />
+            <AssetDetailsCompact symbol={selectedSymbol} onBack={() => setSelectedSymbol(null)} />
           </CardContent>
         </Card>
       )}
@@ -442,48 +578,147 @@ export default function AssetsPage() {
 
       {/* Resultados de búsqueda */}
       {searchResults.length > 0 && !selectedSymbol && (
+        <div className="overflow-x-auto">
+          <Card className={`mb-8 w-full min-w-[600px] ${cardHoverEffect}`}>
+            <CardHeader>
+              <CardTitle className="font-headline text-2xl flex items-center gap-2">
+                <Sparkles className="h-7 w-7 text-primary/90" />
+                Resultados de búsqueda
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <Table className="min-w-[600px]">
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="max-w-[120px] break-words">Nombre</TableHead>
+                    <TableHead>Símbolo</TableHead>
+                    <TableHead className="text-right">Precio</TableHead>
+                    <TableHead className="text-right">Var</TableHead>
+                    <TableHead className="text-right">Exchange</TableHead>
+                    <TableHead className="text-right">Favorito</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {searchResults.map((asset) => (
+                    <TableRow key={asset.symbol}>
+                      <TableCell className="max-w-[120px] break-words">
+                        {asset.shortname || asset.longName || asset.symbol}
+                      </TableCell>
+                      <TableCell>{asset.symbol}</TableCell>
+                      <TableCell className="text-right">
+                        {asset.regularMarketPrice !== undefined &&
+                        asset.regularMarketPrice !== null &&
+                        !isNaN(asset.regularMarketPrice)
+                          ? `$${Number(asset.regularMarketPrice).toLocaleString(undefined, {
+                              minimumFractionDigits: 2,
+                              maximumFractionDigits: 2,
+                            })}`
+                          : "-"}
+                      </TableCell>
+                      <TableCell
+                        className={`text-right ${
+                          asset.regularMarketChange !== undefined &&
+                          asset.regularMarketChange !== null &&
+                          !isNaN(asset.regularMarketChange) &&
+                          asset.regularMarketChange >= 0
+                            ? "text-positive"
+                            : "text-negative"
+                        }`}
+                      >
+                        {asset.regularMarketChange !== undefined &&
+                        asset.regularMarketChange !== null &&
+                        !isNaN(asset.regularMarketChange)
+                          ? `${Number(asset.regularMarketChange).toFixed(2)} (${
+                              asset.regularMarketChangePercent !== undefined &&
+                              asset.regularMarketChangePercent !== null &&
+                              !isNaN(asset.regularMarketChangePercent)
+                                ? Number(asset.regularMarketChangePercent).toFixed(2)
+                                : "-"
+                            }%)`
+                          : "-"}
+                      </TableCell>
+                      <TableCell className="text-right">{asset.exchange || "-"}</TableCell>
+                      <TableCell className="text-right">
+                        <Button
+                          size="icon"
+                          variant="ghost"
+                          onClick={() => handleToggleFavorite(asset)}
+                          aria-label={isFavorite(asset) ? "Quitar de favoritos" : "Agregar a favoritos"}
+                        >
+                          {isFavorite(asset) ? (
+                            <StarOff className="h-5 w-5 text-yellow-400" />
+                          ) : (
+                            <Star className="h-5 w-5 text-yellow-400" />
+                          )}
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </CardContent>
+          </Card>
+        </div>
+      )}
+
+      {/* Acciones en tendencia */}
+      <div className="overflow-x-auto">
         <Card className={`mb-8 w-full ${cardHoverEffect}`}>
-          <CardHeader>
-            <CardTitle className="font-headline text-2xl flex items-center gap-2">
-              <Sparkles className="h-7 w-7 text-primary/90" />
-              Resultados de búsqueda
-            </CardTitle>
+          <CardHeader className="flex flex-col md:flex-row items-start md:items-center justify-between space-x-0 md:space-x-4 pb-4">
+            <div>
+              <CardTitle className="font-headline text-2xl flex items-center gap-2">
+                <WalletCards className="h-7 w-7 text-primary/90" />
+                Acciones en tendencia
+              </CardTitle>
+              <CardDescription>
+                Sigue en tiempo real las acciones que son tendencias en el mercado
+              </CardDescription>
+            </div>
           </CardHeader>
           <CardContent>
-            <Table>
+            <Table className="min-w-[450px]">
               <TableHeader>
                 <TableRow>
-                  <TableHead>Nombre</TableHead>
-                  <TableHead>Símbolo</TableHead>
-                  <TableHead className="text-right">Precio</TableHead>
-                  <TableHead className="text-right">Var</TableHead>
-                  <TableHead className="text-right">Exchange</TableHead>
+                  <TableHead>Asset Name</TableHead>
+                  <TableHead>Symbol</TableHead>
+                  <TableHead className="text-right">Price</TableHead>
+                  <TableHead className="text-right">Change (24h)</TableHead>
                   <TableHead className="text-right">Favorito</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {searchResults.map((asset) => (
+                {trendingAssets.map((asset) => (
                   <TableRow key={asset.symbol}>
-                    <TableCell>{asset.shortname || asset.longName || asset.symbol}</TableCell>
+                    <TableCell>{asset.name}</TableCell>
                     <TableCell>{asset.symbol}</TableCell>
                     <TableCell className="text-right">
-                      {asset.regularMarketPrice !== undefined && asset.regularMarketPrice !== null && !isNaN(asset.regularMarketPrice)
-                        ? `$${Number(asset.regularMarketPrice).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
-                        : "-"
-                      }
-                    </TableCell>
-                    <TableCell className={`text-right ${asset.regularMarketChange !== undefined && asset.regularMarketChange !== null && !isNaN(asset.regularMarketChange) && asset.regularMarketChange >= 0
-                      ? "text-positive"
-                      : "text-negative"
-                    }`}>
-                      {asset.regularMarketChange !== undefined && asset.regularMarketChange !== null && !isNaN(asset.regularMarketChange)
-                        ? `${Number(asset.regularMarketChange).toFixed(2)} (${asset.regularMarketChangePercent !== undefined && asset.regularMarketChangePercent !== null && !isNaN(asset.regularMarketChangePercent)
-                          ? Number(asset.regularMarketChangePercent).toFixed(2)
-                          : "-"
-                        }%)`
+                      {asset.price !== undefined && asset.price !== null && !isNaN(asset.price)
+                        ? `$${Number(asset.price).toLocaleString(undefined, {
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 2,
+                          })}`
                         : "-"}
                     </TableCell>
-                    <TableCell className="text-right">{asset.exchange || "-"}</TableCell>
+                    <TableCell
+                      className={`text-right ${
+                        asset.change !== undefined &&
+                        asset.change !== null &&
+                        !isNaN(asset.change) &&
+                        asset.change >= 0
+                          ? "text-positive"
+                          : "text-negative"
+                      }`}
+                    >
+                      {asset.change !== undefined && asset.change !== null && !isNaN(asset.change)
+                        ? `${Number(asset.change).toFixed(2)} (${
+                            asset.changePercent !== undefined &&
+                            asset.changePercent !== null &&
+                            !isNaN(asset.changePercent)
+                              ? Number(asset.changePercent).toFixed(2)
+                              : "-"
+                          }%)`
+                        : "-"}
+                    </TableCell>
                     <TableCell className="text-right">
                       <Button
                         size="icon"
@@ -502,174 +737,12 @@ export default function AssetsPage() {
                 ))}
               </TableBody>
             </Table>
+            {trendingError && (
+              <div className="text-red-600 mt-2">{trendingError}</div>
+            )}
           </CardContent>
         </Card>
-      )}
-
-      {/* Acciones en tendencia */}
-      <Card className={`mb-8 w-full ${cardHoverEffect}`}>
-        <CardHeader className="flex flex-row items-center justify-between space-x-4 pb-4">
-          <div>
-            <CardTitle className="font-headline text-2xl flex items-center gap-2">
-              <WalletCards className="h-7 w-7 text-primary/90" />
-              Acciones en tendencia
-            </CardTitle>
-            <CardDescription>
-              Sigue en tiempo real las acciones que son tendencias en el mercado
-            </CardDescription>
-          </div>
-        </CardHeader>
-        <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Asset Name</TableHead>
-                <TableHead>Symbol</TableHead>
-                <TableHead className="text-right">Price</TableHead>
-                <TableHead className="text-right">Change (24h)</TableHead>
-                <TableHead className="text-right">Favorito</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {trendingAssets.map(asset => (
-                <TableRow key={asset.symbol}>
-                  <TableCell>{asset.name}</TableCell>
-                  <TableCell>{asset.symbol}</TableCell>
-                  <TableCell className="text-right">
-                    {asset.price !== undefined && asset.price !== null && !isNaN(asset.price)
-                      ? `$${Number(asset.price).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
-                      : "-"
-                    }
-                  </TableCell>
-                  <TableCell className={`text-right ${asset.change !== undefined && asset.change !== null && !isNaN(asset.change) && asset.change >= 0
-                    ? "text-positive"
-                    : "text-negative"
-                  }`}>
-                    {asset.change !== undefined && asset.change !== null && !isNaN(asset.change)
-                      ? `${Number(asset.change).toFixed(2)} (${asset.changePercent !== undefined && asset.changePercent !== null && !isNaN(asset.changePercent)
-                        ? Number(asset.changePercent).toFixed(2)
-                        : "-"
-                      }%)`
-                      : "-"}
-                  </TableCell>
-                  <TableCell className="text-right">
-                    <Button
-                      size="icon"
-                      variant="ghost"
-                      onClick={() => handleToggleFavorite(asset)}
-                      aria-label={isFavorite(asset) ? "Quitar de favoritos" : "Agregar a favoritos"}
-                    >
-                      {isFavorite(asset) ? (
-                        <StarOff className="h-5 w-5 text-yellow-400" />
-                      ) : (
-                        <Star className="h-5 w-5 text-yellow-400" />
-                      )}
-                    </Button>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </CardContent>
-      </Card>
+      </div>
     </motion.div>
   );
-}
-
-function AssetPriceChart() {
-    const symbol = "AAPL"; // activo fijo para probar Apple
-    const [prices, setPrices] = useState([]);
-    const [loading, setLoading] = useState(false);
-
-    useEffect(() => {
-        async function fetchPrices() {
-            setLoading(true);
-            try {
-                const res = await fetch(
-                    `${API_BASE_URL}/api/yahoo/market/quotes/history/${encodeURIComponent(symbol)}`
-                );
-                const historyData = await res.json();
-
-                // Extraer array de precios
-                let arr = [];
-                if (Array.isArray(historyData?.data?.items)) {
-                    arr = historyData.data.items;
-                } else if (Array.isArray(historyData?.body)) {
-                    arr = historyData.body;
-                } else if (Array.isArray(historyData)) {
-                    arr = historyData;
-                }
-
-                // Preparar datos para gráfico
-                const chartData = arr
-                    .map((item) => ({
-                        date: item.date
-                            ? new Date(item.date * 1000).toLocaleTimeString([], {
-                                hour: "2-digit",
-                                minute: "2-digit",
-                            })
-                            : item.formattedDate || "",
-                        price: item.close ?? item.price ?? item.last ?? null,
-                    }))
-                    .filter((d) => d.price !== null);
-
-                setPrices(chartData);
-            } catch {
-                setPrices([]);
-            } finally {
-                setLoading(false);
-            }
-        }
-
-        fetchPrices();
-    }, [symbol]);
-
-    return (
-        <div>
-            <h2>Gráfico de precios para {symbol}</h2>
-            {loading ? (
-                <p>Cargando gráfico...</p>
-            ) : prices.length > 1 ? (
-                <div style={{ width: "100%", height: 240 }}>
-                    <ResponsiveContainer width="100%" height="100%">
-                        <RechartsLineChart data={prices}>
-                            <CartesianGrid strokeDasharray="3 3" />
-                            <XAxis
-                                dataKey="date"
-                                minTickGap={16}
-                                fontSize={10}
-                                label={{ value: "Hora", position: "insideBottomRight", offset: -5 }}
-                                tick={{ fontSize: 10 }}
-                                interval="preserveStartEnd"
-                                ticks={
-                                    prices.length > 0
-                                        ? [
-                                            prices[0].date,
-                                            prices[Math.floor(prices.length / 2)].date,
-                                            prices[prices.length - 1].date
-                                        ]
-                                        : []
-                                }
-                            />
-                            <YAxis
-                                domain={["auto", "auto"]}
-                                fontSize={10}
-                                label={{ value: "Precio", angle: -90, position: "insideLeft", offset: 10 }}
-                            />
-                            <Tooltip />
-                            <Line
-                                type="monotone"
-                                dataKey="price"
-                                stroke="#2563eb"
-                                dot={false}
-                                strokeWidth={2}
-                            />
-                        </RechartsLineChart>
-                    </ResponsiveContainer>
-                </div>
-            ) : (
-                <p>No hay datos para mostrar.</p>
-            )}
-        </div>
-    );
 }
