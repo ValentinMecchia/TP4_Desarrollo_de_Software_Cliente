@@ -7,4 +7,6 @@ export const ROUTES = {
   SETTINGS: '/settings',
 };
 
-export const API_BASE_URL = "http://localhost:3000"; // Cambia el puerto si tu backend usa otro
+export const API_BASE_URL = process.env.NODE_ENV === 'production'
+  ? 'https://tp4-desarrollo-de-software-servidor.onrender.com'
+  : 'http://localhost:3000';
