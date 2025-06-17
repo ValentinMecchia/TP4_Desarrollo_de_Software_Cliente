@@ -8,6 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Logo } from '@/components/common/Logo';
 import { LoadingSpinner } from '@/components/common/LoadingSpinner';
 import { motion, AnimatePresence } from "framer-motion";
+import LegalLinks from '@/components/auth/LegalLinks';
 
 export default function LoginPage() {
   const { user, signInWithGoogle, loading } = useAuth();
@@ -89,9 +90,7 @@ export default function LoginPage() {
               )}
               {loading ? 'Iniciando sesión...' : 'Iniciar Sesión con Google'}
             </Button>
-            <p className="text-xs text-muted-foreground text-center">
-              Al continuar, aceptas nuestros Términos de Servicio y Política de Privacidad (simulados).
-            </p>
+            <LegalLinks />
           </CardContent>
         </Card>
         <p className="mt-8 text-sm text-muted-foreground">

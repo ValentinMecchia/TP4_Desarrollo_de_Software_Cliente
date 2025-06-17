@@ -11,6 +11,8 @@ import News from './pages/News';
 import Settings from './pages/Settings';
 import LoginPage from './pages/Login';
 import { ROUTES } from '@/constants/routes';
+import PrivacyPolicy from './pages/PrivacyPolicy';
+import TermsOfService from './pages/TermsOfService';
 
 // Componente para proteger rutas privadas
 function PrivateRoute({ children }) {
@@ -32,6 +34,8 @@ function App() {
       <AuthProvider>
         <Routes>
           <Route path="/login" element={<LoginPage />} />
+          <Route path={ROUTES.PRIVACYPOLICY} element={<PrivacyPolicy />} />
+          <Route path={ROUTES.TERMS} element={<TermsOfService />} />
           <Route
             path="*"
             element={
@@ -44,6 +48,8 @@ function App() {
                     <Route path={ROUTES.ASSETS} element={<Assets />} />
                     <Route path={ROUTES.NEWS} element={<News />} />
                     <Route path={ROUTES.SETTINGS} element={<Settings />} />
+                    <Route path={ROUTES.PRIVACYPOLICY} element={<PrivacyPolicy />} />
+                    <Route path={ROUTES.TERMS} element={<TermsOfService />} />
                     <Route path="*" element={<div className="text-xl">404 - Not Found</div>} />
                   </Routes>
                   <Toaster />

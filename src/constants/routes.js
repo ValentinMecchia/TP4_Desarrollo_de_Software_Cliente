@@ -5,6 +5,8 @@ export const ROUTES = {
   ASSETS: '/assets',
   NEWS: '/news',
   SETTINGS: '/settings',
+  PRIVACYPOLICY: '/privacy-policy',
+  TERMS: '/terms',
 };
 
 export const API_BASE_URL = process.env.NODE_ENV === 'production'
