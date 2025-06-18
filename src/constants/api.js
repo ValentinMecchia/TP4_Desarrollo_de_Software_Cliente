@@ -1,3 +1,3 @@
-export const API_BASE_URL = process.env.NODE_ENV === 'production'
-  ? 'https://tp-4-desarrollo-de-software-cliente.vercel.app' // ¡Asegúrate de que esta URL coincida con tu dominio de Vercel!
-  : 'http://localhost:3000';
+export const API_BASE_URL = process.env.NEXT_PUBLIC_VERCEL_URL
+  ? `https://${process.env.NEXT_PUBLIC_VERCEL_URL}` // Vercel asigna esta variable automáticamente
+  : 'http://localhost:3000'; // Para desarrollo local
