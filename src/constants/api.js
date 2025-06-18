@@ -1,6 +1,6 @@
-export const API_BASE_URL = process.env.VERCEL_URL
-  ? `https://${process.env.VERCEL_URL}`
+export const API_BASE_URL = typeof window !== 'undefined'
+  ? window.location.origin
   : 'http://localhost:3000';
 
-console.log("Valor de VERCEL_URL en runtime:", process.env.VERCEL_URL);
-console.log("Valor de API_BASE_URL calculado:", API_BASE_URL);
+console.log("Valor de window.location.origin en runtime (frontend):", typeof window !== 'undefined' ? window.location.origin : 'N/A (no es navegador)');
+console.log("Valor de API_BASE_URL calculado (frontend):", API_BASE_URL);
