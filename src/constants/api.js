@@ -1,1 +1,3 @@
-export const API_BASE_URL = import.meta.env.VITE_API_URL;
+export const API_BASE_URL = process.env.NODE_ENV === 'production'
+  ? 'https://tp-4-desarrollo-de-software-cliente.vercel.app' // ¡Asegúrate de que esta URL coincida con tu dominio de Vercel!
+  : 'http://localhost:3000';
