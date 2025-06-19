@@ -8,7 +8,6 @@ export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // Verificar sesión activa al iniciar
   useEffect(() => {
     async function fetchUser() {
       setLoading(true);
