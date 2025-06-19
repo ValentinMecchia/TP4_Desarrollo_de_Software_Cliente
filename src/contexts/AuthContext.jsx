@@ -14,7 +14,6 @@ export function AuthProvider({ children }) {
       setLoading(true);
       const url = `${API_BASE_URL}/api/auth/me`;
       console.log("Solicitando /api/auth/me a:", url);
-      console.log("Cookies disponibles:", document.cookie);
       try {
         const res = await fetch(url, {
           credentials: "include",
@@ -25,6 +24,10 @@ export function AuthProvider({ children }) {
         console.log("Respuesta de /api/auth/me:", res.status, res.statusText);
         const responseBody = await res.text();
         console.log("Cuerpo de la respuesta:", responseBody);
+        console.log(
+          "Encabezados de respuesta:",
+          Object.fromEntries(res.headers)
+        );
         if (res.ok) {
           const data = JSON.parse(responseBody);
           console.log("Datos de usuario:", data);
