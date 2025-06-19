@@ -27,6 +27,10 @@ export function AuthProvider({ children }) {
           "Encabezados de respuesta:",
           Object.fromEntries(res.headers)
         );
+        console.log(
+          "Cookies enviadas en la solicitud:",
+          res.headers.get("cookie") || "Ninguna"
+        );
         if (res.ok) {
           const data = JSON.parse(responseBody);
           console.log("Datos de usuario:", data);
