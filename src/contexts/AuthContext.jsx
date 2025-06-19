@@ -31,9 +31,35 @@ export function AuthProvider({ children }) {
   }, []);
 
   // Iniciar login con Google (redirecciona)
-  const signInWithGoogle = () => {
-    window.location.href = `${API_BASE_URL}/api/auth/google`;
-  };
+const signInWithGoogle = () => {
+    const popup = window.open(`${API_BASE_URL}/api/auth/google`, "_blank", "width=500,height=600");
+
+    const handleMessage = async (event) => {
+        if (event.data === "oauth-success") {
+            window.removeEventListener("message", handleMessage);
+
+            // Esperar un poquito a que se guarde la cookie
+            await new Promise((resolve) => setTimeout(resolve, 500));
+
+            // Volver a consultar si hay sesión
+            const res = await fetch(`${API_BASE_URL}/api/auth/me`, {
+                credentials: 'include'
+            });
+
+            if (res.ok) {
+                const data = await res.json();
+                setUser(data.user);
+                router.push("/dashboard");
+            } else {
+                setUser(null);
+                router.push("/login");
+            }
+        }
+    };
+
+    window.addEventListener("message", handleMessage);
+};
+
 
   // Cerrar sesión
   const signOut = async () => {
