@@ -12,10 +12,15 @@ export function AuthProvider({ children }) {
   useEffect(() => {
     async function fetchUser() {
       setLoading(true);
-      console.log("Solicitando /api/auth/me a:", `${API_BASE_URL}/api/auth/me`);
+      await new Promise((resolve) => setTimeout(resolve, 500)); // Retraso de 500ms
+      const url = `${API_BASE_URL}/api/auth/me`;
+      console.log("Solicitando /api/auth/me a:", url);
       try {
-        const res = await fetch(`${API_BASE_URL}/api/auth/me`, {
+        const res = await fetch(url, {
           credentials: "include",
+          headers: {
+            Accept: "application/json",
+          },
         });
         console.log("Respuesta de /api/auth/me:", res.status, res.statusText);
         if (res.ok) {
@@ -23,6 +28,7 @@ export function AuthProvider({ children }) {
           console.log("Datos de usuario:", data);
           setUser(data.user || null);
         } else {
+          console.log("Respuesta no OK:", await res.text());
           setUser(null);
         }
       } catch (err) {
