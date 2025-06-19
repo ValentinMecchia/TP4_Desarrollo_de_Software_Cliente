@@ -12,17 +12,21 @@ export function AuthProvider({ children }) {
   useEffect(() => {
     async function fetchUser() {
       setLoading(true);
+      console.log("Solicitando /api/auth/me a:", `${API_BASE_URL}/api/auth/me`);
       try {
         const res = await fetch(`${API_BASE_URL}/api/auth/me`, {
           credentials: "include",
         });
+        console.log("Respuesta de /api/auth/me:", res.status, res.statusText);
         if (res.ok) {
           const data = await res.json();
+          console.log("Datos de usuario:", data);
           setUser(data.user || null);
         } else {
           setUser(null);
         }
-      } catch {
+      } catch (err) {
+        console.error("Error en fetchUser:", err);
         setUser(null);
       }
       setLoading(false);
