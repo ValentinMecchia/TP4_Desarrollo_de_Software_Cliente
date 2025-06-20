@@ -3,7 +3,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { DollarSign, TrendingUp, PieChart, AlertCircle, Activity, BarChart3, ChevronLeft, ChevronRight, Trash2, PlusCircle } from "lucide-react";
 import { API_BASE_URL } from "@/constants/api";
 import { useAuth } from "@/contexts/AuthContext";
-import { PieChart as RechartsPieChart, Pie, Cell, Tooltip as PieTooltip, Legend as PieLegend } from "recharts";
+import { PieChart as RechartsPieChart, Pie, Cell, Tooltip as PieTooltip, Legend as PieLegend, ResponsiveContainer  } from "recharts";
 import { motion, AnimatePresence } from "framer-motion";
 
 const cardHoverEffect = "transition-all duration-300 ease-in-out hover:shadow-2xl hover:-translate-y-1 hover:shadow-primary/20 border border-border hover:border-primary/30";
@@ -24,29 +24,31 @@ function AssetPieChart({ assets }) {
 
   if (data.length === 0) return <div className="text-muted-foreground text-sm">Sin activos</div>;
 
-  return (
-    <div className="w-full flex flex-col items-center overflow-x-auto">
-      <div className="w-full max-w-xs sm:max-w-md md:max-w-lg lg:max-w-xl">
-        <RechartsPieChart width={320} height={220}>
-          <Pie
-            data={data}
-            dataKey="value"
-            nameKey="name"
-            cx="50%"
-            cy="50%"
-            outerRadius={80}
-            label={({ name, percent }) => `${name} (${(percent * 100).toFixed(0)}%)`}
-          >
-            {data.map((entry, idx) => (
-              <Cell key={entry.name} fill={PIE_COLORS[idx % PIE_COLORS.length]} />
-            ))}
-          </Pie>
-          <PieTooltip
-            formatter={(value, name) => [`${value} acciones`, "Cantidad"]}
-          />
-          <PieLegend verticalAlign="bottom" height={36} />
-        </RechartsPieChart>
-      </div>
+return (
+    <div className="w-full flex justify-center">
+        <div className="w-full max-w-xl">
+            <ResponsiveContainer width="100%" height={300}>
+                <RechartsPieChart>
+                    <Pie
+                        data={data}
+                        dataKey="value"
+                        nameKey="name"
+                        cx="50%"
+                        cy="50%"
+                        outerRadius={80}
+                        label={({ name, percent }) => `${name} (${(percent * 100).toFixed(0)}%)`}
+                    >
+                        {data.map((entry, idx) => (
+                            <Cell key={entry.name} fill={PIE_COLORS[idx % PIE_COLORS.length]} />
+                        ))}
+                    </Pie>
+                    <PieTooltip
+                        formatter={(value, name) => [`${value} acciones`, "Cantidad"]}
+                    />
+                    <PieLegend verticalAlign="bottom" height={36} />
+                </RechartsPieChart>
+            </ResponsiveContainer>
+        </div>
     </div>
   );
 }

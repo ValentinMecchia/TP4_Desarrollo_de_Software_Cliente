@@ -12,7 +12,6 @@ export function AuthProvider({ children }) {
     async function fetchUser() {
       setLoading(true);
       const url = `${API_BASE_URL}/api/auth/me`;
-      console.log("Solicitando /api/auth/me a:", url);
       try {
         const res = await fetch(url, {
           credentials: "include",
@@ -20,20 +19,9 @@ export function AuthProvider({ children }) {
             Accept: "application/json",
           },
         });
-        console.log("Respuesta de /api/auth/me:", res.status, res.statusText);
         const responseBody = await res.text();
-        console.log("Cuerpo de la respuesta:", responseBody);
-        console.log(
-          "Encabezados de respuesta:",
-          Object.fromEntries(res.headers)
-        );
-        console.log(
-          "Cookies enviadas en la solicitud:",
-          res.headers.get("cookie") || "Ninguna"
-        );
         if (res.ok) {
           const data = JSON.parse(responseBody);
-          console.log("Datos de usuario:", data);
           setUser(data.user || null);
         } else {
           setUser(null);
